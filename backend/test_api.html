@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Excel API</title>
+</head>
+<body>
+    <h1>Testing Excel Performance API</h1>
+    <button onclick="test1Y()">Test 1Y</button>
+    <button onclick="test3Y()">Test 3Y</button>
+    <button onclick="test5Y()">Test 5Y</button>
+    <button onclick="test10Y()">Test 10Y</button>
+    <pre id="output"></pre>
+    
+    <script>
+        async function testPeriod(period) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/api/baskets/b14/excel-performance?period=${period}`);
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch(err) {
+                document.getElementById('output').textContent = 'Error: ' + err.message;
+            }
+        }
+        
+        function test1Y() { testPeriod('1Y'); }
+        function test3Y() { testPeriod('3Y'); }
+        function test5Y() { testPeriod('5Y'); }
+        function test10Y() { testPeriod('10Y'); }
+    </script>
+</body>
+</html>
