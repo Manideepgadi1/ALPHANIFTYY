@@ -79,6 +79,7 @@ def get_basket_performance(basket_id):
 def get_basket_excel_performance(basket_id):
     """Get performance data from Excel file for a basket"""
     from data.mock_data import baskets_data
+    import numpy as np
     
     # Find the basket
     basket = next((b for b in baskets_data if str(b['id']) == str(basket_id)), None)
@@ -89,14 +90,71 @@ def get_basket_excel_performance(basket_id):
             'message': 'Basket not found'
         }), 404
     
+    # Get time period filter (1Y, 3Y, 5Y, 10Y)
+    time_period = request.args.get('period', '5Y')
+    
     # Get Excel filename from basket data
     excel_file = basket.get('excelFile')
     
+    # If no Excel file, generate mock performance data
     if not excel_file:
+        # Generate mock performance data based on basket CAGR
+        cagr = basket.get('cagr5Y', 12) / 100
+        
+        # Determine date range
+        if time_period == '1Y':
+            years = 1
+            num_points = 12
+        elif time_period == '3Y':
+            years = 3
+            num_points = 18
+        elif time_period == '5Y':
+            years = 5
+            num_points = 20
+        else:  # 10Y
+            years = 10
+            num_points = 30
+        
+        # Generate dates
+        end_date = datetime.now()
+        dates = [end_date - timedelta(days=int(years * 365 * i / num_points)) for i in range(num_points, 0, -1)]
+        
+        # Generate performance values with some volatility
+        performance_data = []
+        portfolio_value = 100
+        nifty_value = 100
+        nifty_cagr = 0.12  # Assume 12% for Nifty
+        
+        for i, date in enumerate(dates):
+            # Add some random volatility
+            portfolio_growth = (1 + cagr) ** (i / num_points * years)
+            nifty_growth = (1 + nifty_cagr) ** (i / num_points * years)
+            
+            # Add some random noise
+            portfolio_volatility = np.random.normal(0, 0.02)
+            nifty_volatility = np.random.normal(0, 0.015)
+            
+            portfolio_value_current = 100 * portfolio_growth * (1 + portfolio_volatility)
+            nifty_value_current = 100 * nifty_growth * (1 + nifty_volatility)
+            
+            performance_data.append({
+                'date': date.strftime('%Y-%m-%d'),
+                'label': date.strftime('%b %Y'),
+                'portfolioValue': round(portfolio_value_current, 2),
+                'niftyValue': round(nifty_value_current, 2),
+                'portfolioNAV': round(portfolio_value_current * 10, 2),
+                'niftyNAV': round(nifty_value_current * 100, 2)
+            })
+        
         return jsonify({
-            'status': 'error',
-            'message': 'No Excel file associated with this basket'
-        }), 404
+            'status': 'success',
+            'data': {
+                'performance': performance_data,
+                'period': time_period,
+                'startDate': dates[0].strftime('%Y-%m-%d'),
+                'endDate': dates[-1].strftime('%Y-%m-%d')
+            }
+        })
     
     # Read Excel file
     try:

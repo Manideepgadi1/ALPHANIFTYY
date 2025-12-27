@@ -1,0 +1,27 @@
+[Unit]
+Description=Alphanifty Flask API
+After=network.target
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+RuntimeDirectory=gunicorn
+WorkingDirectory=/var/www/alphanifty/backend
+Environment="PATH=/var/www/alphanifty/backend/venv/bin"
+ExecStart=/var/www/alphanifty/backend/venv/bin/gunicorn \
+    --workers 4 \
+    --bind 127.0.0.1:5000 \
+    --timeout 120 \
+    --access-logfile /var/log/alphanifty/access.log \
+    --error-logfile /var/log/alphanifty/error.log \
+    app:app
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+KillSignal=SIGQUIT
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

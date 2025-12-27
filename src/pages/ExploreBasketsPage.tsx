@@ -43,7 +43,7 @@ const ExploreBasketsPage: React.FC = () => {
   const handleAddToCart = (basketId: string) => {
     (async () => {
       try {
-        const res = await cartApi.add({ userId: 'guest', basketId: Number(basketId), investmentType: 'SIP', amount: 5000 });
+        const res = await cartApi.add({ userId: 'guest', basketId: basketId, investmentType: 'SIP', amount: 5000 });
         if (res.status === 'success') {
           alert('Basket added to cart!');
           await refreshCart();

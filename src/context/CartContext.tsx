@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface CartItem {
   id: number;
-  basketId: number;
+  basketId: number | string;
   quantity: number;
   investmentType: 'SIP' | 'Lumpsum';
   amount: number;

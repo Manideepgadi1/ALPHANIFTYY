@@ -6,7 +6,7 @@ import useCart from '../context/CartContext';
 
 interface CartItem {
   id?: string;
-  basketId: number;
+  basketId: number | string;
   investmentType: 'SIP' | 'Lumpsum';
   amount: number;
   frequency?: 'Monthly' | 'Quarterly' | 'Yearly';
@@ -38,7 +38,7 @@ const CartPage: React.FC = () => {
         if (res.status === 'success' && Array.isArray(res.data)) {
           const items: CartItem[] = res.data.map((it: any) => ({
             id: it.id,
-            basketId: Number(it.basketId),
+            basketId: it.basketId,
             investmentType: it.investmentType,
             amount: Number(it.amount),
             frequency: it.frequency,
@@ -58,7 +58,7 @@ const CartPage: React.FC = () => {
   /* =====================================================
      HELPERS
   ===================================================== */
-  const getBasket = (basketId: number): Basket | undefined => {
+  const getBasket = (basketId: number | string): Basket | undefined => {
     return baskets.find(b => String(b.id) === String(basketId));
   };
 

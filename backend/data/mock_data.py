@@ -488,6 +488,26 @@ baskets_data = [
         'suitableFor': 'Investors under 50 years with 7+ year horizon, looking for aggressive wealth creation with high risk tolerance',
         'rebalancingFrequency': 'Quarterly',
         'funds': ['fund-1', 'fund-2', 'fund-3'],
+        'fundAllocations': [
+            {'fundId': 'fund-1', 'fundName': 'HDFC Top 100 Fund', 'allocationPercent': 35, 'category': 'Large Cap'},
+            {'fundId': 'fund-2', 'fundName': 'Axis Bluechip Fund', 'allocationPercent': 35, 'category': 'Large Cap'},
+            {'fundId': 'fund-3', 'fundName': 'Parag Parikh Flexi Cap Fund', 'allocationPercent': 30, 'category': 'Flexi Cap'},
+        ],
+        'sectorAllocation': [
+            {'sector': 'Financial Services', 'percent': 28.5},
+            {'sector': 'Information Technology', 'percent': 24.2},
+            {'sector': 'Consumer Goods', 'percent': 16.8},
+            {'sector': 'Healthcare', 'percent': 12.5},
+            {'sector': 'Industrials', 'percent': 10.2},
+            {'sector': 'Others', 'percent': 7.8},
+        ],
+        'topHoldings': [
+            {'stockName': 'HDFC Bank Ltd', 'percent': 6.8, 'sector': 'Financial Services'},
+            {'stockName': 'Infosys Ltd', 'percent': 6.2, 'sector': 'IT'},
+            {'stockName': 'ICICI Bank Ltd', 'percent': 5.5, 'sector': 'Financial Services'},
+            {'stockName': 'TCS Ltd', 'percent': 5.1, 'sector': 'IT'},
+            {'stockName': 'Reliance Industries', 'percent': 4.8, 'sector': 'Energy'},
+        ],
     },
     # Basket 2: Blue Basket
     {
@@ -511,6 +531,24 @@ baskets_data = [
         'suitableFor': 'Investors under 40 years with moderate risk appetite, looking for balanced growth',
         'rebalancingFrequency': 'Half-yearly',
         'funds': ['fund-1', 'fund-2'],
+        'fundAllocations': [
+            {'fundId': 'fund-1', 'fundName': 'HDFC Top 100 Fund', 'allocationPercent': 50, 'category': 'Large Cap'},
+            {'fundId': 'fund-2', 'fundName': 'Axis Bluechip Fund', 'allocationPercent': 50, 'category': 'Large Cap'},
+        ],
+        'sectorAllocation': [
+            {'sector': 'Financial Services', 'percent': 30.5},
+            {'sector': 'Information Technology', 'percent': 22.8},
+            {'sector': 'Consumer Goods', 'percent': 18.2},
+            {'sector': 'Healthcare', 'percent': 14.5},
+            {'sector': 'Others', 'percent': 14.0},
+        ],
+        'topHoldings': [
+            {'stockName': 'HDFC Bank Ltd', 'percent': 7.2, 'sector': 'Financial Services'},
+            {'stockName': 'Infosys Ltd', 'percent': 6.5, 'sector': 'IT'},
+            {'stockName': 'ICICI Bank Ltd', 'percent': 5.8, 'sector': 'Financial Services'},
+            {'stockName': 'TCS Ltd', 'percent': 5.3, 'sector': 'IT'},
+            {'stockName': 'Hindustan Unilever', 'percent': 4.5, 'sector': 'Consumer Goods'},
+        ],
     },
     # Basket 3: Green Basket
     {
@@ -534,6 +572,25 @@ baskets_data = [
         'suitableFor': 'Young investors under 20 with very long-term goals and ability to withstand market volatility',
         'rebalancingFrequency': 'Annually',
         'funds': ['fund-2', 'fund-3'],
+        'fundAllocations': [
+            {'fundId': 'fund-2', 'fundName': 'Axis Bluechip Fund', 'allocationPercent': 50, 'category': 'Large Cap'},
+            {'fundId': 'fund-3', 'fundName': 'Parag Parikh Flexi Cap Fund', 'allocationPercent': 50, 'category': 'Flexi Cap'},
+        ],
+        'sectorAllocation': [
+            {'sector': 'Information Technology', 'percent': 28.5},
+            {'sector': 'Financial Services', 'percent': 25.2},
+            {'sector': 'Consumer Goods', 'percent': 15.8},
+            {'sector': 'Healthcare', 'percent': 12.5},
+            {'sector': 'Industrials', 'percent': 10.0},
+            {'sector': 'Others', 'percent': 8.0},
+        ],
+        'topHoldings': [
+            {'stockName': 'Infosys Ltd', 'percent': 7.5, 'sector': 'IT'},
+            {'stockName': 'TCS Ltd', 'percent': 6.8, 'sector': 'IT'},
+            {'stockName': 'HDFC Bank Ltd', 'percent': 6.2, 'sector': 'Financial Services'},
+            {'stockName': 'ICICI Bank Ltd', 'percent': 5.5, 'sector': 'Financial Services'},
+            {'stockName': 'Wipro Ltd', 'percent': 4.8, 'sector': 'IT'},
+        ],
     },
     # Basket 4: Yellow Basket (with Excel data) - Less than 1 Year
     {
@@ -587,6 +644,26 @@ baskets_data = [
         'suitableFor': 'Mid-career professionals planning for retirement with 15+ year horizon',
         'rebalancingFrequency': 'Annually',
         'funds': ['fund-1', 'fund-2', 'fund-3'],
+        'fundAllocations': [
+            {'fundId': 'fund-1', 'fundName': 'HDFC Top 100 Fund', 'allocationPercent': 35, 'category': 'Large Cap'},
+            {'fundId': 'fund-2', 'fundName': 'Axis Bluechip Fund', 'allocationPercent': 35, 'category': 'Large Cap'},
+            {'fundId': 'fund-3', 'fundName': 'Parag Parikh Flexi Cap Fund', 'allocationPercent': 30, 'category': 'Flexi Cap'},
+        ],
+        'sectorAllocation': [
+            {'sector': 'Financial Services', 'percent': 26.5},
+            {'sector': 'Information Technology', 'percent': 22.0},
+            {'sector': 'Consumer Goods', 'percent': 17.5},
+            {'sector': 'Healthcare', 'percent': 15.0},
+            {'sector': 'Industrials', 'percent': 11.0},
+            {'sector': 'Others', 'percent': 8.0},
+        ],
+        'topHoldings': [
+            {'stockName': 'HDFC Bank Ltd', 'percent': 6.5, 'sector': 'Financial Services'},
+            {'stockName': 'Infosys Ltd', 'percent': 6.0, 'sector': 'IT'},
+            {'stockName': 'ICICI Bank Ltd', 'percent': 5.5, 'sector': 'Financial Services'},
+            {'stockName': 'TCS Ltd', 'percent': 5.2, 'sector': 'IT'},
+            {'stockName': 'Hindustan Unilever', 'percent': 4.8, 'sector': 'Consumer Goods'},
+        ],
     },
     # Basket 7: Child Education Basket
     {
@@ -610,6 +687,24 @@ baskets_data = [
         'suitableFor': 'Parents planning for child\'s education expenses with 10+ year horizon',
         'rebalancingFrequency': 'Annually',
         'funds': ['fund-1', 'fund-2'],
+        'fundAllocations': [
+            {'fundId': 'fund-1', 'fundName': 'HDFC Top 100 Fund', 'allocationPercent': 55, 'category': 'Large Cap'},
+            {'fundId': 'fund-2', 'fundName': 'Axis Bluechip Fund', 'allocationPercent': 45, 'category': 'Large Cap'},
+        ],
+        'sectorAllocation': [
+            {'sector': 'Financial Services', 'percent': 28.0},
+            {'sector': 'Information Technology', 'percent': 24.5},
+            {'sector': 'Consumer Goods', 'percent': 18.0},
+            {'sector': 'Healthcare', 'percent': 14.5},
+            {'sector': 'Others', 'percent': 15.0},
+        ],
+        'topHoldings': [
+            {'stockName': 'HDFC Bank Ltd', 'percent': 7.0, 'sector': 'Financial Services'},
+            {'stockName': 'Infosys Ltd', 'percent': 6.5, 'sector': 'IT'},
+            {'stockName': 'ICICI Bank Ltd', 'percent': 5.8, 'sector': 'Financial Services'},
+            {'stockName': 'TCS Ltd', 'percent': 5.5, 'sector': 'IT'},
+            {'stockName': 'Reliance Industries', 'percent': 4.8, 'sector': 'Energy'},
+        ],
     },
     # Basket 8: Dream Home Basket
     {
@@ -633,6 +728,25 @@ baskets_data = [
         'suitableFor': 'Aspiring home buyers with 5-10 year purchase timeline',
         'rebalancingFrequency': 'Half-yearly',
         'funds': ['fund-1', 'fund-2'],
+        'fundAllocations': [
+            {'fundId': 'fund-1', 'fundName': 'HDFC Top 100 Fund', 'allocationPercent': 50, 'category': 'Large Cap'},
+            {'fundId': 'fund-2', 'fundName': 'Axis Bluechip Fund', 'allocationPercent': 50, 'category': 'Large Cap'},
+        ],
+        'sectorAllocation': [
+            {'sector': 'Financial Services', 'percent': 29.5},
+            {'sector': 'Real Estate', 'percent': 15.0},
+            {'sector': 'Infrastructure', 'percent': 18.5},
+            {'sector': 'Consumer Goods', 'percent': 16.0},
+            {'sector': 'Information Technology', 'percent': 12.0},
+            {'sector': 'Others', 'percent': 9.0},
+        ],
+        'topHoldings': [
+            {'stockName': 'HDFC Bank Ltd', 'percent': 7.2, 'sector': 'Financial Services'},
+            {'stockName': 'DLF Ltd', 'percent': 5.5, 'sector': 'Real Estate'},
+            {'stockName': 'Larsen & Toubro', 'percent': 5.2, 'sector': 'Infrastructure'},
+            {'stockName': 'ICICI Bank Ltd', 'percent': 5.8, 'sector': 'Financial Services'},
+            {'stockName': 'Godrej Properties', 'percent': 4.8, 'sector': 'Real Estate'},
+        ],
     },
     # Basket 9: Aggressive Hybrid Basket (with Excel data)
     {

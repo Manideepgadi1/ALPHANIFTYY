@@ -6,11 +6,13 @@ const ExploreFundsPage: React.FC = () => {
   const [funds, setFunds] = useState<ApiFund[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedRisk, setSelectedRisk] = useState<string>('All');
   const [sortBy, setSortBy] = useState<string>('returns5Y-desc');
 
+  /* ================= FETCH FUNDS ================= */
   useEffect(() => {
     const fetchFunds = async () => {
       try {
@@ -21,7 +23,7 @@ const ExploreFundsPage: React.FC = () => {
         } else {
           setError(response.message || 'Failed to load funds');
         }
-      } catch (err) {
+      } catch {
         setError('Unable to connect to server');
       } finally {
         setLoading(false);
@@ -31,25 +33,27 @@ const ExploreFundsPage: React.FC = () => {
     fetchFunds();
   }, []);
 
-  // Filter and sort funds
+  /* ================= FILTER + SORT ================= */
   const filteredFunds = funds
     .filter(fund => {
-      // Search filter
-      if (searchQuery && !fund.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
-          !(fund.amc || fund.fundHouse || '').toLowerCase().includes(searchQuery.toLowerCase())) {
+      if (
+        searchQuery &&
+        !fund.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !(fund.amc || fund.fundHouse || '')
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      ) {
         return false;
       }
-      
-      // Category filter
+
       if (selectedCategory !== 'All' && fund.category !== selectedCategory) {
         return false;
       }
-      
-      // Risk filter
+
       if (selectedRisk !== 'All' && fund.risk !== selectedRisk) {
         return false;
       }
-      
+
       return true;
     })
     .sort((a, b) => {
@@ -59,19 +63,22 @@ const ExploreFundsPage: React.FC = () => {
       return direction === 'desc' ? bValue - aValue : aValue - bValue;
     });
 
-  const renderStars = (rating: number) => {
-    return [...Array(5)].map((_, i) => (
+  /* ================= HELPERS ================= */
+  const renderStars = (rating: number) =>
+    Array.from({ length: 5 }).map((_, i) => (
       <Star
         key={i}
-        className={`w-4 h-4 ${i < rating ? 'text-warning fill-warning' : 'text-gray-300'}`}
+        className={`w-4 h-4 ${
+          i < rating ? 'text-warning fill-warning' : 'text-gray-300'
+        }`}
       />
     ));
-  };
 
+  /* ================= UI ================= */
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container-main">
-        {/* Header */}
+        {/* HEADER */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Explore Mutual Funds
@@ -81,25 +88,27 @@ const ExploreFundsPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Search and Filter Bar */}
+        {/* SEARCH & FILTER BAR */}
         <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
           <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
+            {/* SEARCH */}
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
+                aria-label="Search mutual funds"
                 type="text"
                 placeholder="Search funds or AMC..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
 
-            {/* Category Filter */}
+            {/* CATEGORY FILTER */}
             <select
+              aria-label="Filter by fund category"
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={e => setSelectedCategory(e.target.value)}
               className="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary bg-white"
             >
               <option value="All">All Categories</option>
@@ -108,10 +117,11 @@ const ExploreFundsPage: React.FC = () => {
               <option value="Hybrid">Hybrid</option>
             </select>
 
-            {/* Risk Filter */}
+            {/* RISK FILTER */}
             <select
+              aria-label="Filter by risk level"
               value={selectedRisk}
-              onChange={(e) => setSelectedRisk(e.target.value)}
+              onChange={e => setSelectedRisk(e.target.value)}
               className="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary bg-white"
             >
               <option value="All">All Risk Levels</option>
@@ -120,10 +130,11 @@ const ExploreFundsPage: React.FC = () => {
               <option value="High">High Risk</option>
             </select>
 
-            {/* Sort */}
+            {/* SORT */}
             <select
+              aria-label="Sort mutual funds"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={e => setSortBy(e.target.value)}
               className="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary bg-white"
             >
               <option value="returns5Y-desc">5Y Returns (High to Low)</option>
@@ -136,182 +147,115 @@ const ExploreFundsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Results Count */}
+        {/* RESULTS COUNT */}
         {!loading && !error && (
-          <div className="mb-6">
-            <p className="text-gray-600">
-              Showing <span className="font-semibold">{filteredFunds.length}</span> fund{filteredFunds.length !== 1 ? 's' : ''}
-            </p>
-          </div>
+          <p className="mb-6 text-gray-600">
+            Showing <strong>{filteredFunds.length}</strong> fund
+            {filteredFunds.length !== 1 ? 's' : ''}
+          </p>
         )}
 
-        {/* Funds List */}
+        {/* FUNDS LIST */}
         {!loading && !error && filteredFunds.length > 0 && (
           <div className="space-y-4">
-            {filteredFunds.map((fund) => (
-              <div key={fund.id} className="card hover:shadow-lg transition-shadow duration-200">
-                <div className="p-6">
+            {filteredFunds.map(fund => (
+              <div key={fund.id} className="card p-6">
                 <div className="flex flex-col lg:flex-row gap-6">
-                  {/* Left: Fund Info */}
+                  {/* INFO */}
                   <div className="flex-1">
-                    <div className="flex items-start justify-between mb-4">
+                    <div className="flex justify-between mb-4">
                       <div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        <h3 className="text-xl font-semibold mb-1">
                           {fund.name}
                         </h3>
-                        <div className="flex items-center gap-2 text-gray-600 mb-2">
+                        <div className="flex items-center gap-2 text-gray-600">
                           <Building2 className="w-4 h-4" />
-                          <span className="text-sm">{fund.fundHouse || fund.amc}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="badge bg-primary-50 text-primary-700">
-                            {fund.category}
-                          </span>
-                          {fund.subCategory && (
-                            <span className="badge bg-gray-100 text-gray-700">
-                              {fund.subCategory}
-                            </span>
-                          )}
-                          <span className={`badge ${
-                            fund.risk.toLowerCase().includes('low') ? 'badge-low' :
-                            fund.risk.toLowerCase().includes('high') ? 'badge-high' : 'badge-medium'
-                          }`}>
-                            {fund.risk} Risk
-                          </span>
+                          {fund.fundHouse || fund.amc}
                         </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        {renderStars(fund.rating)}
-                      </div>
+                      <div className="flex gap-1">{renderStars(fund.rating)}</div>
                     </div>
 
-                    {/* Performance Metrics */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                      <div>
-                        <div className="text-xs text-gray-500 mb-1">1Y Returns</div>
-                        <div className="text-lg font-semibold text-success">{fund.returns1Y}%</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-gray-500 mb-1">3Y Returns</div>
-                        <div className="text-lg font-semibold text-success">{fund.returns3Y}%</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-gray-500 mb-1">5Y Returns</div>
-                        <div className="text-lg font-semibold text-success">{fund.returns5Y}%</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-gray-500 mb-1">AUM</div>
-                        <div className="text-lg font-semibold text-gray-900">{fund.aum}</div>
-                      </div>
-                    </div>
+                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+  <Metric label="1Y" value={`${fund.returns1Y}%`} />
+  <Metric label="3Y" value={`${fund.returns3Y}%`} />
+  <Metric label="5Y" value={`${fund.returns5Y}%`} />
+  <Metric label="AUM" value={String(fund.aum)} />
+</div>
 
-                    {/* Additional Details */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <span className="text-gray-500">NAV:</span>
-                        <span className="ml-2 font-semibold text-gray-900">₹{fund.nav}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Exp Ratio:</span>
-                        <span className="ml-2 font-semibold text-gray-900">{fund.expenseRatio}%</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Min Inv:</span>
-                        <span className="ml-2 font-semibold text-gray-900">₹{(fund.minInvestment || 5000).toLocaleString()}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Sharpe:</span>
-                        <span className="ml-2 font-semibold text-gray-900">{fund.sharpeRatio || fund.sharpe || 'N/A'}</span>
-                      </div>
-                    </div>
                   </div>
 
-                  {/* Right: Actions */}
+                  {/* ACTIONS */}
                   <div className="flex lg:flex-col gap-3 lg:w-40">
-                    <button className="btn btn-primary flex-1 lg:flex-none">
-                      View Details
-                    </button>
-                    <button className="btn btn-success flex-1 lg:flex-none">
-                      Invest Now
-                    </button>
+                    <button className="btn btn-primary">View Details</button>
+                    <button className="btn btn-success">Invest Now</button>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
           </div>
         )}
 
-        {/* Loading and Error States */}
+        {/* LOADING */}
         {loading && (
-          <div className="flex justify-center items-center py-20">
+          <div className="flex justify-center py-20">
             <Loader className="w-12 h-12 text-primary animate-spin" />
           </div>
         )}
-        
+
+        {/* ERROR */}
         {!loading && error && (
-          <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 text-center">
-            <p className="text-red-600 font-semibold mb-2">Unable to load funds</p>
-            <p className="text-gray-600 text-sm">{error}</p>
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+            <p className="text-red-600 font-semibold">{error}</p>
           </div>
         )}
-        
+
+        {/* EMPTY */}
         {!loading && !error && filteredFunds.length === 0 && (
           <div className="text-center py-16">
             <Filter className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No funds found
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Try adjusting your filters or search query
-            </p>
+            <h3 className="text-xl font-semibold">No funds found</h3>
             <button
               onClick={() => {
                 setSearchQuery('');
                 setSelectedCategory('All');
                 setSelectedRisk('All');
               }}
-              className="btn btn-primary"
+              className="btn btn-primary mt-4"
             >
-              Clear All Filters
+              Clear Filters
             </button>
           </div>
         )}
 
-        {/* Info Section - Always visible */}
+        {/* INFO */}
         {!loading && (
           <div className="mt-12 card p-6 bg-primary-50 border border-primary-100">
-          <div className="flex items-start gap-4">
-            <Award className="w-8 h-8 text-primary flex-shrink-0 mt-1" />
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Why Choose Our Curated Funds?
-              </h3>
-              <p className="text-gray-700 mb-4">
-                All funds in our platform are carefully selected based on consistent performance, 
-                strong fund management, and investor-friendly practices.
-              </p>
-              <div className="grid md:grid-cols-3 gap-4 text-sm">
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Performance Track Record</h4>
-                  <p className="text-gray-600">Minimum 3-year consistent returns</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Low Expense Ratios</h4>
-                  <p className="text-gray-600">Cost-effective fund management</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Experienced Fund Managers</h4>
-                  <p className="text-gray-600">Proven expertise and track record</p>
-                </div>
+            <div className="flex gap-4">
+              <Award className="w-8 h-8 text-primary" />
+              <div>
+                <h3 className="text-lg font-semibold mb-2">
+                  Why Choose Our Curated Funds?
+                </h3>
+                <p className="text-gray-700">
+                  Funds are selected based on consistency, low costs, and
+                  strong fund management.
+                </p>
               </div>
             </div>
           </div>
-        </div>
         )}
       </div>
     </div>
   );
 };
+
+/* ================= SMALL COMPONENT ================= */
+const Metric = ({ label, value }: { label: string; value: string }) => (
+  <div>
+    <p className="text-xs text-gray-500">{label}</p>
+    <p className="text-lg font-semibold text-success">{value}</p>
+  </div>
+);
 
 export default ExploreFundsPage;

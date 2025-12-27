@@ -1,83 +1,129 @@
+/* =========================================================
+   Tailwind + Editor Compatibility
+   ========================================================= */
+/* stylelint-disable at-rule-no-unknown */
+/* csslint ignore:start */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* =========================================================
+   Base Styles
+   ========================================================= */
 @layer base {
-  * {
+  *,
+  ::before,
+  ::after {
     @apply border-gray-200;
   }
-  
+
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
   }
 }
 
+/* =========================================================
+   Component Styles
+   ========================================================= */
 @layer components {
-  /* Button Styles */
+  /* ---------------- Buttons ---------------- */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-xl font-semibold
+           transition-all duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  
+
   .btn-primary {
     @apply bg-primary text-white hover:bg-primary-600 hover:shadow-lg;
   }
-  
+
   .btn-success {
     @apply bg-success text-white hover:bg-success-600 hover:shadow-lg;
   }
-  
+
   .btn-secondary {
     @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
   }
-  
+
   .btn-outline {
-    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white;
+    @apply border-2 border-primary text-primary
+           hover:bg-primary hover:text-white;
   }
 
-  /* Card Styles */
+  /* ---------------- Cards ---------------- */
   .card {
-    @apply bg-white rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-200;
+    @apply bg-white rounded-xl shadow-card
+           hover:shadow-card-hover
+           transition-shadow duration-200;
   }
 
-  /* Badge Styles */
+  /* ---------------- Badges ---------------- */
   .badge {
-    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold;
+    @apply inline-flex items-center gap-1
+           px-3 py-1 rounded-full
+           text-xs font-semibold;
   }
-  
+
   .badge-low {
     @apply bg-success-50 text-success-700;
   }
-  
+
   .badge-medium {
     @apply bg-warning-50 text-warning-700;
   }
-  
+
   .badge-high {
     @apply bg-danger-50 text-danger-700;
   }
 
-  /* Input Styles */
+  /* ---------------- Inputs ---------------- */
   .input {
-    @apply w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all;
+    @apply w-full px-4 py-3 rounded-xl
+           border border-gray-200
+           focus:outline-none
+           focus:ring-2 focus:ring-primary
+           focus:border-transparent
+           transition-all;
   }
-  
+
   .input-error {
     @apply border-danger-500 focus:ring-danger-500;
   }
 
-  /* Link Styles */
+  /* ---------------- Links ---------------- */
   .link {
-    @apply text-primary hover:text-primary-700 hover:underline transition-colors;
+    @apply text-primary hover:text-primary-700
+           hover:underline transition-colors;
   }
 
-  /* Section Container */
+  /* ---------------- Layout ---------------- */
   .container-main {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto
+           px-4 sm:px-6 lg:px-8;
+  }
+
+  /* ---------------- Dynamic Color Helper ---------------- */
+  .basket-color {
+    background-color: var(--basket-color);
   }
 }
 
+/* =========================================================
+   Utilities
+   ========================================================= */
 @layer utilities {
+  /*
+    Safe replacement for `text-wrap: balance`
+    (avoids Edge / older browser warnings)
+  */
   .text-balance {
-    text-wrap: balance;
+    overflow-wrap: break-word;
+    word-break: normal;
+    hyphens: auto;
   }
 }
+
+/* csslint ignore:end */
+/* stylelint-enable */

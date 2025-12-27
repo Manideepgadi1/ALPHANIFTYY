@@ -1,28 +1,35 @@
 import React from 'react';
-import { 
-  Layers, 
-  AlertCircle, 
-  Clock, 
-  DollarSign, 
-  TrendingUp, 
-  Activity, 
+import {
+  Layers,
+  AlertCircle,
+  Clock,
+  DollarSign,
+  TrendingUp,
+  Activity,
   BarChart3,
   Eye,
-  ShoppingCart
+  ShoppingCart,
 } from 'lucide-react';
 import { Basket } from '../services/api';
 
+/* =====================================================
+   PROPS
+===================================================== */
 interface BasketCardProps {
   basket: Basket;
   onViewDetails?: (basketId: string) => void;
   onAddToCart?: (basketId: string) => void;
 }
 
-const BasketCard: React.FC<BasketCardProps> = ({ 
-  basket, 
-  onViewDetails, 
-  onAddToCart 
+/* =====================================================
+   COMPONENT
+===================================================== */
+const BasketCard: React.FC<BasketCardProps> = ({
+  basket,
+  onViewDetails,
+  onAddToCart,
 }) => {
+  /* -------------------- HELPERS -------------------- */
   const getRiskBadgeClass = (risk: string) => {
     const riskLower = risk.toLowerCase();
     if (riskLower.includes('low')) return 'badge-low';
@@ -30,51 +37,51 @@ const BasketCard: React.FC<BasketCardProps> = ({
     return 'badge-medium';
   };
 
-  const getRiskIcon = () => {
-    return <AlertCircle className="w-4 h-4" />;
-  };
-
+  /* -------------------- SAFE DERIVED VALUES -------------------- */
   const riskLevel = basket.risk || basket.riskLevel || 'Medium';
-  const minReturn = basket.minReturn || basket.cagr1Y || 0;
-  const maxReturn = basket.maxReturn || basket.cagr5Y || 0;
-  const color = (basket as any).color || '#2E89C4';
-  const experienceLevel = (basket as any).experienceLevel || basket.category || 'For all investors';
-  const timeHorizon = (basket as any).timeHorizon || '3-5 years';
-  const riskPercentage = (basket as any).riskPercentage || 12.5;
-  const sharpeRatio = (basket as any).sharpeRatio || 1.5;
 
+  const minReturn = basket.cagr1Y ?? 0;
+  const maxReturn = basket.cagr5Y ?? 0;
+
+  const color = basket.color ?? '#2E89C4';
+  const experienceLevel =
+    basket.experienceLevel ?? basket.category ?? 'For all investors';
+
+  const timeHorizon = basket.timeHorizon ?? '3–5 years';
+  const riskPercentage = basket.riskPercentage ?? 12.5;
+  const sharpeRatio = basket.sharpeRatio ?? 1.5;
+
+  /* =====================================================
+     RENDER
+  ===================================================== */
   return (
     <div className="card p-6 flex flex-col gap-6">
-      {/* Header Section */}
+      {/* ================= HEADER ================= */}
       <div className="flex gap-4">
-        {/* Colored Icon Box */}
-        <div 
+        <div
           className="w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0"
           style={{ backgroundColor: color }}
         >
           <Layers className="w-9 h-9 text-white" />
         </div>
 
-        {/* Basket Info */}
         <div className="flex-1 min-w-0">
           <h3 className="text-xl font-semibold text-gray-900 mb-1 line-clamp-1">
             {basket.name}
           </h3>
-          <p className="text-sm text-gray-500 mb-2">
-            {experienceLevel}
-          </p>
+          <p className="text-sm text-gray-500 mb-2">{experienceLevel}</p>
           <p className="text-sm text-gray-600 line-clamp-2">
             {basket.description}
           </p>
         </div>
       </div>
 
-      {/* Metrics Section - 3 Column Grid */}
+      {/* ================= METRICS ================= */}
       <div className="grid grid-cols-3 gap-4">
-        {/* Row 1 - Risk */}
+        {/* Risk */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1 text-gray-500">
-            {getRiskIcon()}
+            <AlertCircle className="w-4 h-4" />
             <span className="text-xs font-medium">Risk</span>
           </div>
           <span className={`badge ${getRiskBadgeClass(riskLevel)}`}>
@@ -82,18 +89,18 @@ const BasketCard: React.FC<BasketCardProps> = ({
           </span>
         </div>
 
-        {/* Row 1 - Timeline */}
+        {/* Timeline */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1 text-gray-500">
             <Clock className="w-4 h-4" />
             <span className="text-xs font-medium">Timeline</span>
           </div>
           <span className="text-sm font-semibold text-gray-900">
-            {basket.timeHorizon || '5+ years'}
+            {timeHorizon}
           </span>
         </div>
 
-        {/* Row 1 - Min SIP */}
+        {/* Min SIP */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1 text-gray-500">
             <DollarSign className="w-4 h-4" />
@@ -104,7 +111,7 @@ const BasketCard: React.FC<BasketCardProps> = ({
           </span>
         </div>
 
-        {/* Row 2 - Returns (3Y & 5Y) */}
+        {/* Returns */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1 text-gray-500">
             <TrendingUp className="w-4 h-4" />
@@ -113,41 +120,41 @@ const BasketCard: React.FC<BasketCardProps> = ({
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-600">3Y:</span>
             <span className="text-sm font-semibold text-success">
-              {basket.cagr3Y || minReturn}%
+              {basket.cagr3Y ?? minReturn}%
             </span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-600">5Y:</span>
             <span className="text-sm font-semibold text-success">
-              {basket.cagr5Y || maxReturn}%
+              {basket.cagr5Y ?? maxReturn}%
             </span>
           </div>
         </div>
 
-        {/* Row 2 - Risk % */}
+        {/* Risk % */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1 text-gray-500">
             <Activity className="w-4 h-4" />
             <span className="text-xs font-medium">Risk %</span>
           </div>
           <span className="text-sm font-semibold text-gray-900">
-            {basket.riskPercentage || '12.5'}%
+            {riskPercentage}%
           </span>
         </div>
 
-        {/* Row 2 - Sharpe Ratio */}
+        {/* Sharpe Ratio */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1 text-gray-500">
             <BarChart3 className="w-4 h-4" />
             <span className="text-xs font-medium">Sharpe</span>
           </div>
           <span className="text-sm font-semibold text-gray-900">
-            {basket.sharpeRatio || '1.5'}
+            {sharpeRatio}
           </span>
         </div>
       </div>
 
-      {/* Action Buttons */}
+      {/* ================= ACTIONS ================= */}
       <div className="flex gap-4">
         <button
           onClick={() => onViewDetails?.(String(basket.id))}
@@ -156,6 +163,7 @@ const BasketCard: React.FC<BasketCardProps> = ({
           <Eye className="w-5 h-5" />
           View Basket
         </button>
+
         <button
           onClick={() => onAddToCart?.(String(basket.id))}
           className="flex-1 btn btn-success"

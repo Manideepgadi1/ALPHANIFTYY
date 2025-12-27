@@ -62,7 +62,7 @@ export interface PerformanceData {
 
 export interface CartItem {
   id: string;
-  basketId: number;
+  basketId: number | string;
   investmentType: 'SIP' | 'Lumpsum';
   amount: number;
   frequency?: 'Monthly' | 'Quarterly' | 'Yearly';
@@ -212,7 +212,7 @@ export const cartApi = {
 
   add: (data: {
     userId?: string;
-    basketId: number;
+    basketId: number | string;
     investmentType: 'SIP' | 'Lumpsum';
     amount: number;
     frequency?: 'Monthly' | 'Quarterly' | 'Yearly';
