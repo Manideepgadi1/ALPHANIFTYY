@@ -8,6 +8,24 @@ Alphanifty is a comprehensive investment platform built with:
 - **Frontend**: React 18 + TypeScript + Vite + Tailwind CSS
 - **Backend**: Python Flask REST API
 - **Design**: Modern, responsive UI with custom design system
+- **Deployment**: Ready for VPS deployment with path-based routing
+
+## 🌐 Live Deployment
+
+- **Production URL**: http://vsfintech.in/alphanifty/
+- **API Endpoint**: http://vsfintech.in/alphanifty/api/
+- **Integration**: Seamlessly integrated with vsfintech main site
+
+## 📦 VPS Deployment Ready
+
+This project is configured for deployment on a VPS alongside other projects:
+- ✅ **Path-based routing** at `/alphanifty/`
+- ✅ **No port conflicts** with existing projects
+- ✅ **Nginx configuration** included
+- ✅ **Automated deployment script** provided
+- ✅ **Complete documentation** for deployment
+
+**Quick Deployment**: See [DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md) for quick start guide.
 
 ## ✅ Phase 1 - COMPLETED
 
@@ -294,6 +312,31 @@ The following features are planned for Phase 2:
 - **Pandas** - Data processing
 - **NumPy** - Calculations
 
+## � VPS Deployment Documentation
+
+Complete deployment guides and tools are available:
+
+- 📖 **[DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md)** - Quick start guide
+- 📘 **[VPS_DEPLOYMENT_GUIDE.md](VPS_DEPLOYMENT_GUIDE.md)** - Complete deployment instructions
+- ✅ **[DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)** - Verification checklist
+- 🔧 **[deploy-vps.sh](deploy-vps.sh)** - Automated deployment script
+- 🎨 **[VSFINTECH_INTEGRATION_EXAMPLES.html](VSFINTECH_INTEGRATION_EXAMPLES.html)** - Launch button examples
+- ⚙️ **[nginx-path-based.conf](nginx-path-based.conf)** - Nginx configuration
+
+### Quick Deploy on VPS
+
+```bash
+# Clone repository
+git clone https://github.com/Manideepgadi1/ALPHANIFTYY.git alphanifty
+cd alphanifty
+
+# Run automated deployment
+chmod +x deploy-vps.sh
+./deploy-vps.sh
+
+# Follow VPS_DEPLOYMENT_GUIDE.md for nginx configuration
+```
+
 ## 📝 Notes
 
 - All components are fully responsive (mobile, tablet, desktop)
@@ -301,6 +344,8 @@ The following features are planned for Phase 2:
 - Design follows the specified color system and spacing
 - BasketCard component matches exact design specifications
 - Mock data includes realistic investment metrics
+- Configured for path-based deployment at `/alphanifty/`
+- No conflicts with existing projects on same server
 
 ## 🤝 Contributing
 
@@ -312,16 +357,19 @@ This project is part of the Alphanifty Investment Platform development.
 
 ---
 
-**Status**: Phase 1 Complete ✅  
+**Status**: Phase 1 Complete ✅ | Ready for VPS Deployment 🚀  
 **Version**: 1.0.0  
-**Last Updated**: December 24, 2025
+**Last Updated**: December 29, 2025  
+**Repository**: https://github.com/Manideepgadi1/ALPHANIFTYY
 
-## 🎉 Success!
+## 🎉 Ready for Production!
 
-Phase 1 is complete and the foundation is ready. You can now:
-1. Browse the homepage
-2. Explore investment baskets
-3. Filter and sort baskets
-4. See the responsive design in action
+The project is now ready for deployment:
+1. ✅ All code pushed to GitHub
+2. ✅ Configured for multi-project VPS setup
+3. ✅ Complete deployment documentation
+4. ✅ Automated deployment script
+5. ✅ Integration examples for vsfintech
 
-Ready to move to Phase 2? Let's build the Basket Details page next! 🚀
+**Deploy now** by following the [DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md) guide! 🚀
+
