@@ -1,0 +1,149 @@
+<!-- Example: How to add Launch Button to vsfintech Home Page -->
+
+<!-- Option 1: Simple Link Button -->
+<a href="/alphanifty/" class="launch-button" style="
+    display: inline-block;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+">
+    🚀 Launch Alphanifty Platform
+</a>
+
+<!-- Option 2: Button with Hover Effect -->
+<style>
+.alphanifty-launch-btn {
+    display: inline-block;
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    border: none;
+    cursor: pointer;
+}
+
+.alphanifty-launch-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.alphanifty-launch-btn:active {
+    transform: translateY(0);
+}
+</style>
+
+<a href="/alphanifty/" class="alphanifty-launch-btn">
+    🚀 Launch Alphanifty Platform
+</a>
+
+<!-- Option 3: Button with Icon (using Font Awesome) -->
+<a href="/alphanifty/" class="btn btn-primary btn-lg">
+    <i class="fas fa-rocket"></i> Launch Alphanifty Platform
+</a>
+
+<!-- Option 4: JavaScript Redirect with Confirmation -->
+<button onclick="launchAlphanifty()" class="launch-button">
+    Launch Alphanifty Platform
+</button>
+
+<script>
+function launchAlphanifty() {
+    // Optional: Add analytics tracking here
+    console.log('Launching Alphanifty Platform');
+    
+    // Redirect to Alphanifty
+    window.location.href = '/alphanifty/';
+}
+</script>
+
+<!-- Option 5: Card Style Launch Button -->
+<style>
+.alphanifty-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.alphanifty-card h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.alphanifty-card p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.alphanifty-card .launch-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
+
+.alphanifty-card .launch-btn:hover {
+    transform: scale(1.05);
+}
+</style>
+
+<div class="alphanifty-card">
+    <h3>🎯 Alphanifty Platform</h3>
+    <p>Explore curated investment baskets and smart portfolio management tools</p>
+    <a href="/alphanifty/" class="launch-btn">
+        Launch Platform →
+    </a>
+</div>
+
+<!-- Option 6: Navigation Menu Item -->
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/services">Services</a></li>
+        <li><a href="/alphanifty/" class="highlight">Alphanifty Platform</a></li>
+        <li><a href="/contact">Contact</a></li>
+    </ul>
+</nav>
+
+<!-- Option 7: Hero Section CTA -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Welcome to VS Fintech</h1>
+        <p>Your gateway to smart investing</p>
+        <div class="cta-buttons">
+            <a href="/alphanifty/" class="btn btn-primary btn-lg">
+                Launch Alphanifty Platform
+            </a>
+            <a href="/about" class="btn btn-secondary btn-lg">
+                Learn More
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- 
+IMPORTANT NOTES:
+1. The href should be "/alphanifty/" (with trailing slash)
+2. Do NOT use full URL like "http://vsfintech.in/alphanifty/"
+3. Relative path ensures it works on any domain
+4. Make sure the button is visible and accessible
+5. Test after deployment that it redirects correctly
+-->
