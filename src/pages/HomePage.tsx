@@ -48,16 +48,17 @@ const HomePage: React.FC = () => {
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
               Discover expertly crafted mutual fund portfolios designed to help you achieve your financial goals with confidence.
             </p>
-            <diLink to="/explore-baskets" className="btn btn-primary text-lg px-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/explore-baskets" className="btn btn-primary text-lg px-8">
                 Explore Baskets
               </Link>
               <Link to="/calculators" className="btn btn-outline text-lg px-8">
                 Try Calculators
-              </Linkry Calculators
-              </a>
+              </Link>
             </div>
           </div>
         </div>
+      </section>
       </section>
 
       {/* Features Section */}
