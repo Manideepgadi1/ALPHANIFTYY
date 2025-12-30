@@ -59,7 +59,6 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
-      </section>
 
       {/* Features Section */}
       <section className="py-20 bg-white">
