@@ -6,9 +6,9 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
-  base: process.env.NODE_ENV === 'development' ? '/' : '/alphanifty/',
+  base: command === 'serve' ? '/' : '/alphanifty/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -23,4 +23,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));
