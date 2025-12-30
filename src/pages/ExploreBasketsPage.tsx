@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Filter, SlidersHorizontal, Loader } from 'lucide-react';
 import BasketCard from '../components/BasketCard';
 import { basketApi, Basket, cartApi } from '../services/api';
@@ -6,6 +7,7 @@ import useCart from '../context/CartContext';
 import { FilterOptions, SortOption } from '../types';
 
 const ExploreBasketsPage: React.FC = () => {
+  const navigate = useNavigate();
   const [baskets, setBaskets] = useState<Basket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +39,7 @@ const ExploreBasketsPage: React.FC = () => {
 
   const handleViewDetails = (basketId: string) => {
     // Navigate to basket details page
-    window.location.href = `/basket-details/${basketId}`;
+    navigate(`/basket-details/${basketId}`);
   };
 
   const handleAddToCart = (basketId: string) => {

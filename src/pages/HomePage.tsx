@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { TrendingUp, Target, Shield, Sparkles, Loader } from 'lucide-react';
 import { basketApi, Basket } from '../services/api';
 import BasketCard from '../components/BasketCard';
 
 const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   const [baskets, setBaskets] = useState<Basket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const handleViewDetails = (basketId: string) => {
+    navigate(`/basket-details/${basketId}`);
+  };
 
   useEffect(() => {
     const fetchBaskets = async () => {
@@ -42,12 +48,12 @@ const HomePage: React.FC = () => {
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
               Discover expertly crafted mutual fund portfolios designed to help you achieve your financial goals with confidence.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="/explore-baskets" className="btn btn-primary text-lg px-8">
+            <diLink to="/explore-baskets" className="btn btn-primary text-lg px-8">
                 Explore Baskets
-              </a>
-              <a href="/calculators" className="btn btn-outline text-lg px-8">
+              </Link>
+              <Link to="/calculators" className="btn btn-outline text-lg px-8">
                 Try Calculators
+              </Linkry Calculators
               </a>
             </div>
           </div>
@@ -140,9 +146,9 @@ const HomePage: React.FC = () => {
             <h2 className="text-4xl font-bold text-gray-900">
               Featured Baskets
             </h2>
-            <a href="/explore-baskets" className="btn btn-outline">
+            <Link to="/explore-baskets" className="btn btn-outline">
               View All Baskets
-            </a>
+            </Link>
           </div>
 
           {loading ? (
@@ -157,7 +163,7 @@ const HomePage: React.FC = () => {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {baskets.map((basket) => (
-                <BasketCard key={basket.id} basket={basket} />
+                <BasketCard key={basket.id} basket={basket} onViewDetails={handleViewDetails} />
               ))}
             </div>
           )}
@@ -173,9 +179,9 @@ const HomePage: React.FC = () => {
           <p className="text-xl mb-8 text-primary-100 max-w-2xl mx-auto">
             Join thousands of smart investors building wealth with Alphanifty's expert-curated portfolios.
           </p>
-          <a href="/register" className="btn bg-white text-primary hover:bg-gray-100 text-lg px-8">
+          <Link to="/register" className="btn bg-white text-primary hover:bg-gray-100 text-lg px-8">
             Get Started Free
-          </a>
+          </Link>
         </div>
       </section>
     </div>
