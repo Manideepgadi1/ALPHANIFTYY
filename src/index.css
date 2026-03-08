@@ -20,7 +20,47 @@
 
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
   }
+
+  /* Better mobile text rendering */
+  @media (max-width: 640px) {
+    body {
+      font-size: 14px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* Ensure images are responsive */
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Better touch targets on mobile */
+    button, a {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+}
+
+/* =========================================================
+   Custom Animations
+   ========================================================= */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
 }
 
 /* =========================================================
@@ -104,9 +144,139 @@
            px-4 sm:px-6 lg:px-8;
   }
 
+  /* ---------------- Mobile Optimization ---------------- */
+  @media (max-width: 640px) {
+    .container-main {
+      @apply px-3;
+    }
+    
+    /* Ensure cards don't overflow */
+    .card {
+      @apply text-sm;
+    }
+
+    /* Stack buttons on mobile */
+    .btn {
+      @apply text-sm px-4 py-2.5;
+    }
+
+    /* Smaller padding on mobile cards */
+    .bg-white.rounded-xl {
+      @apply p-4;
+    }
+
+    /* Responsive tables */
+    table {
+      @apply text-sm;
+    }
+
+    th, td {
+      @apply px-2 py-2;
+    }
+
+    /* Hide less important columns on mobile */
+    .hide-mobile {
+      @apply hidden sm:table-cell;
+    }
+
+    /* Ensure text doesn't overflow */
+    h1, h2, h3, h4, h5, h6 {
+      @apply break-words;
+    }
+
+    /* Better spacing for mobile */
+    .gap-8 {
+      @apply gap-4;
+    }
+
+    .gap-6 {
+      @apply gap-3;
+    }
+
+    /* Smaller margins on mobile */
+    .my-8 {
+      @apply my-4;
+    }
+
+    .py-8 {
+      @apply py-4;
+    }
+  }
+
+  /* ---------------- Responsive Table Wrapper ---------------- */
+  .table-responsive {
+    @apply w-full overflow-x-auto -mx-4 sm:mx-0;
+  }
+
+  .table-responsive table {
+    @apply min-w-full;
+  }
+
+  @media (max-width: 640px) {
+    .table-responsive {
+      @apply scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100;
+    }
+  }
+
   /* ---------------- Dynamic Color Helper ---------------- */
   .basket-color {
     background-color: var(--basket-color);
+  }
+
+  /* ---------------- Dynamic Progress Bars ---------------- */
+  .progress-bar-dynamic {
+    width: var(--progress-width);
+  }
+
+  /* ---------------- Chart Containers ---------------- */
+  .chart-lg {
+    height: 500px;
+  }
+
+  .chart-md {
+    height: 300px;
+  }
+
+  /* ---------------- Mobile Responsive Charts ---------------- */
+  @media (max-width: 768px) {
+    .chart-lg {
+      height: 350px;
+    }
+
+    .chart-md {
+      height: 250px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .chart-lg {
+      height: 300px;
+    }
+
+    .chart-md {
+      height: 220px;
+    }
+  }
+
+  /* ---------------- Fund Color Indicators ---------------- */
+  .fund-color-0 {
+    background-color: #E74C3C;
+  }
+
+  .fund-color-1 {
+    background-color: #3498DB;
+  }
+
+  .fund-color-2 {
+    background-color: #2ECC71;
+  }
+
+  .fund-color-3 {
+    background-color: #F39C12;
+  }
+
+  .fund-color-4 {
+    background-color: #9B59B6;
   }
 }
 

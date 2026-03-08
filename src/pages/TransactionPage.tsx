@@ -51,17 +51,24 @@ const TransactionPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-success-50 py-12">
       <div className="container-main">
         <button
           onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors mb-6"
+          className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors mb-6 font-semibold"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Dashboard
         </button>
 
-        <h1 className="text-4xl font-bold mb-8">Transaction History</h1>
+        <div className="mb-10">
+          <div className="inline-flex items-center gap-2 bg-success-100 rounded-full px-5 py-2 mb-4">
+            <Calendar className="w-4 h-4 text-success" />
+            <span className="text-sm font-semibold text-success">Transaction Records</span>
+          </div>
+          <h1 className="text-5xl font-bold text-gray-900 mb-3">Transaction <span className="text-success">History</span></h1>
+          <p className="text-xl text-gray-600">Track all your investment transactions in one place</p>
+        </div>
 
         {/* Filters */}
         <div className="card p-6 mb-8">

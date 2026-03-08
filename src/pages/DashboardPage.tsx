@@ -81,17 +81,21 @@ const DashboardPage: React.FC = () => {
   ===================================================== */
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center pt-32">
-        <Loader className="w-12 h-12 text-primary animate-spin" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50 flex flex-col items-center justify-center pt-32">
+        <Loader className="w-16 h-16 text-primary animate-spin mb-4" />
+        <p className="text-gray-600 text-lg">Loading your portfolio...</p>
       </div>
     );
   }
 
   if (error || !portfolio) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center pt-32">
-        <div className="text-center">
-          <p className="text-red-600 font-semibold mb-4">{error}</p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50 flex items-center justify-center pt-32">
+        <div className="text-center bg-white rounded-3xl shadow-2xl p-10 max-w-md">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <p className="text-red-600 font-bold text-xl mb-4">{error}</p>
           <button onClick={() => window.location.reload()} className="btn btn-primary">
             Retry
           </button>

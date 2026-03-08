@@ -106,14 +106,19 @@ const SIPCalculatorPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50 py-12">
       <div className="container-main">
-        {/* HEADER */}
-        <div className="text-center mb-8">
-          <Calculator className="w-12 h-12 text-primary mx-auto mb-3" />
-          <h1 className="text-4xl font-bold">SIP Calculator</h1>
-          <p className="text-gray-600">
-            Estimate your SIP returns accurately
+        {/* HEADER with Enhanced Design */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-primary-100 rounded-full px-5 py-2 mb-4">
+            <Calculator className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-primary">SIP Investment Tool</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+            <span className="text-primary">SIP</span> Calculator
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Plan your systematic investment and estimate future returns with precision
           </p>
         </div>
 
@@ -127,8 +132,16 @@ const SIPCalculatorPage: React.FC = () => {
               id="monthlyInvestment"
               type="number"
               className="input mb-4"
+              min="0"
               value={monthlyInvestment}
-              onChange={(e) => setMonthlyInvestment(Number(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value.replace(/^0+/, '') || '0';
+                setMonthlyInvestment(val === '' ? 0 : parseInt(val, 10) || 0);
+              }}
+              onBlur={(e) => {
+                const val = e.target.value.replace(/^0+/, '') || '0';
+                setMonthlyInvestment(parseInt(val, 10) || 0);
+              }}
             />
 
             <label htmlFor="expectedReturn" className="block text-sm mb-1">
@@ -138,8 +151,13 @@ const SIPCalculatorPage: React.FC = () => {
               id="expectedReturn"
               type="number"
               className="input mb-4"
+              min="0"
+              step="0.1"
               value={expectedReturn}
-              onChange={(e) => setExpectedReturn(Number(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value;
+                setExpectedReturn(val === '' ? 0 : parseFloat(val) || 0);
+              }}
             />
 
             <label htmlFor="timePeriod" className="block text-sm mb-1">
@@ -149,8 +167,12 @@ const SIPCalculatorPage: React.FC = () => {
               id="timePeriod"
               type="number"
               className="input"
+              min="1"
               value={timePeriod}
-              onChange={(e) => setTimePeriod(Number(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value;
+                setTimePeriod(val === '' ? 1 : parseInt(val, 10) || 1);
+              }}
             />
           </div>
 

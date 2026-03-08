@@ -30,6 +30,7 @@ const GoalCalculatorPage: React.FC = () => {
     if (remaining <= 0) {
       return {
         requiredMonthlySIP: 0,
+        sipFutureValue: 0,
         futureValueExisting,
         message: 'Your existing investment is sufficient to meet the goal!',
       };
@@ -42,8 +43,14 @@ const GoalCalculatorPage: React.FC = () => {
       (remaining * monthlyRate) /
       ((Math.pow(1 + monthlyRate, months) - 1) * (1 + monthlyRate));
 
+    // Calculate future value of the required SIP
+    const sipFV = monthlyRate > 0 
+      ? sip * (((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate))
+      : sip * months;
+
     return {
       requiredMonthlySIP: sip,
+      sipFutureValue: sipFV,
       futureValueExisting,
       message: `You need to invest ₹${sip.toLocaleString('en-IN', {
         maximumFractionDigits: 0,
@@ -55,13 +62,13 @@ const GoalCalculatorPage: React.FC = () => {
 
   /* ================= CHART ================= */
   const chartData = {
-    labels: ['Existing Investment', 'SIP Investment', 'Target Goal'],
+    labels: ['Existing FV', 'SIP FV', 'Target Goal'],
     datasets: [
       {
-        label: 'Amount (₹)',
+        label: 'Future Value (₹)',
         data: [
           result.futureValueExisting,
-          (result.requiredMonthlySIP || 0) * 12 * yearsToGoal,
+          result.sipFutureValue,
           targetAmount,
         ],
         backgroundColor: ['#2E89C4', '#3BAF4A', '#E8C23A'],
@@ -86,12 +93,19 @@ const GoalCalculatorPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-warning-50 py-12">
       <div className="container-main">
-        <div className="text-center mb-8">
-          <Target className="w-12 h-12 text-warning mx-auto mb-3" />
-          <h1 className="text-4xl font-bold">Goal Calculator</h1>
-          <p className="text-gray-600">Plan your investments smartly</p>
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-warning-100 rounded-full px-5 py-2 mb-4">
+            <Target className="w-4 h-4 text-warning" />
+            <span className="text-sm font-semibold text-warning">Financial Goal Planner</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+            <span className="text-warning">Goal</span> Calculator
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Plan your investment journey to achieve your financial dreams
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-5 gap-8">
@@ -115,8 +129,16 @@ const GoalCalculatorPage: React.FC = () => {
               id="targetAmount"
               type="number"
               className="input mb-4"
+              min="0"
               value={targetAmount}
-              onChange={(e) => setTargetAmount(Number(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value.replace(/^0+/, '') || '0';
+                setTargetAmount(val === '' ? 0 : parseInt(val, 10) || 0);
+              }}
+              onBlur={(e) => {
+                const val = e.target.value.replace(/^0+/, '') || '0';
+                setTargetAmount(parseInt(val, 10) || 0);
+              }}
             />
 
             <label htmlFor="yearsToGoal" className="block text-sm font-medium mb-1">
@@ -126,8 +148,12 @@ const GoalCalculatorPage: React.FC = () => {
               id="yearsToGoal"
               type="number"
               className="input mb-4"
+              min="1"
               value={yearsToGoal}
-              onChange={(e) => setYearsToGoal(Number(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value;
+                setYearsToGoal(val === '' ? 1 : parseInt(val, 10) || 1);
+              }}
             />
 
             <label htmlFor="expectedReturn" className="block text-sm font-medium mb-1">
@@ -137,8 +163,13 @@ const GoalCalculatorPage: React.FC = () => {
               id="expectedReturn"
               type="number"
               className="input mb-4"
+              min="0"
+              step="0.1"
               value={expectedReturn}
-              onChange={(e) => setExpectedReturn(Number(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value;
+                setExpectedReturn(val === '' ? 0 : parseFloat(val) || 0);
+              }}
             />
 
             <label htmlFor="existingInvestment" className="block text-sm font-medium mb-1">
@@ -148,8 +179,16 @@ const GoalCalculatorPage: React.FC = () => {
               id="existingInvestment"
               type="number"
               className="input"
+              min="0"
               value={existingInvestment}
-              onChange={(e) => setExistingInvestment(Number(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value.replace(/^0+/, '') || '0';
+                setExistingInvestment(val === '' ? 0 : parseInt(val, 10) || 0);
+              }}
+              onBlur={(e) => {
+                const val = e.target.value.replace(/^0+/, '') || '0';
+                setExistingInvestment(parseInt(val, 10) || 0);
+              }}
             />
           </div>
 

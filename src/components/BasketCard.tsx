@@ -59,8 +59,8 @@ const BasketCard: React.FC<BasketCardProps> = ({
       {/* ================= HEADER ================= */}
       <div className="flex gap-4">
         <div
-          className="w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0"
-          style={{ backgroundColor: color }}
+          className="basket-color w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0"
+          style={{ '--basket-color': color } as React.CSSProperties}
         >
           <Layers className="w-9 h-9 text-white" />
         </div>
@@ -117,6 +117,14 @@ const BasketCard: React.FC<BasketCardProps> = ({
             <TrendingUp className="w-4 h-4" />
             <span className="text-xs font-medium">Returns</span>
           </div>
+          {basket.averageReturn && (
+            <div className="mb-1">
+              <span className="text-xs text-gray-500">Avg:</span>
+              <span className="ml-1 text-base font-bold text-success">
+                {basket.averageReturn}%
+              </span>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-600">3Y:</span>
             <span className="text-sm font-semibold text-success">
@@ -165,11 +173,16 @@ const BasketCard: React.FC<BasketCardProps> = ({
         </button>
 
         <button
-          onClick={() => onAddToCart?.(String(basket.id))}
-          className="flex-1 btn btn-success"
+          onClick={() => {
+            // Optimistic update - add to cart immediately
+            onAddToCart?.(String(basket.id));
+            // Open external link in new tab without blocking
+            window.open('https://fund.alphanifty.com/login?authpage=basket', '_blank');
+          }}
+          className="flex-1 btn btn-success flex items-center justify-center gap-2"
         >
           <ShoppingCart className="w-5 h-5" />
-          Add
+          Add to Cart
         </button>
       </div>
     </div>

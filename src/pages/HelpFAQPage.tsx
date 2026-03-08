@@ -88,66 +88,81 @@ const HelpFAQPage: React.FC = () => {
   })).filter(category => category.questions.length > 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-warning-50 py-12">
       <div className="container-main">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors mb-6"
+          className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors mb-6 font-semibold"
         >
           <ArrowLeft className="w-5 h-5" />
           Back
         </button>
 
         <div className="text-center mb-12">
-          <HelpCircle className="w-16 h-16 text-primary mx-auto mb-4" />
-          <h1 className="text-4xl font-bold mb-4">Help & FAQ</h1>
-          <p className="text-gray-600 text-lg">Find answers to common questions</p>
+          <div className="inline-flex items-center gap-2 bg-warning-100 rounded-full px-5 py-2 mb-4">
+            <HelpCircle className="w-4 h-4 text-warning" />
+            <span className="text-sm font-semibold text-warning">Support Center</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+            How Can We <span className="text-warning">Help?</span>
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+            Find answers to common questions and get support from our team
+          </p>
         </div>
 
-        {/* Search */}
-        <div className="max-w-2xl mx-auto mb-12">
+        {/* Search Bar */}
+        <div className="max-w-3xl mx-auto mb-16">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for answers..."
-              className="input w-full pl-12 py-4 text-lg"
+              className="w-full pl-16 pr-6 py-5 text-lg rounded-2xl border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-warning focus:border-transparent shadow-lg"
             />
           </div>
         </div>
 
-        {/* FAQs */}
-        <div className="max-w-4xl mx-auto mb-12">
+        {/* FAQs with Enhanced Design */}
+        <div className="max-w-4xl mx-auto mb-16">
           {filteredFAQs.length === 0 ? (
-            <div className="card p-12 text-center">
-              <p className="text-gray-600">No results found for "{searchQuery}"</p>
+            <div className="card p-16 text-center">
+              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="w-10 h-10 text-red-500" />
+              </div>
+              <p className="text-xl text-gray-600 font-semibold">No results found for "{searchQuery}"</p>
+              <p className="text-gray-500 mt-2">Try different keywords or browse all categories</p>
             </div>
           ) : (
             filteredFAQs.map((category, catIndex) => (
-              <div key={catIndex} className="mb-8">
-                <h2 className="text-2xl font-bold mb-4">{category.category}</h2>
-                <div className="space-y-3">
+              <div key={catIndex} className="mb-10">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-2 h-8 bg-warning rounded-full"></div>
+                  <h2 className="text-3xl font-bold text-gray-900">{category.category}</h2>
+                </div>
+                <div className="space-y-4">
                   {category.questions.map((item, qIndex) => {
                     const faqId = catIndex * 100 + qIndex;
                     const isOpen = openFAQ === faqId;
                     return (
-                      <div key={qIndex} className="card">
+                      <div key={qIndex} className="card border-2 border-transparent hover:border-warning transition-all">
                         <button
                           onClick={() => setOpenFAQ(isOpen ? null : faqId)}
-                          className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                          className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors rounded-xl"
                         >
-                          <span className="font-semibold text-gray-900">{item.q}</span>
+                          <span className="font-bold text-lg text-gray-900">{item.q}</span>
                           {isOpen ? (
-                            <ChevronUp className="w-5 h-5 text-primary flex-shrink-0" />
+                            <ChevronUp className="w-6 h-6 text-warning flex-shrink-0" />
                           ) : (
-                            <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                            <ChevronDown className="w-6 h-6 text-gray-400 flex-shrink-0" />
                           )}
                         </button>
                         {isOpen && (
                           <div className="px-6 pb-6">
-                            <p className="text-gray-600 leading-relaxed">{item.a}</p>
+                            <div className="h-px bg-gray-200 mb-4"></div>
+                            <p className="text-gray-600 text-lg leading-relaxed">{item.a}</p>
                           </div>
                         )}
                       </div>
@@ -159,24 +174,44 @@ const HelpFAQPage: React.FC = () => {
           )}
         </div>
 
-        {/* Contact Support */}
-        <div className="max-w-4xl mx-auto">
-          <div className="card p-8 bg-gradient-to-r from-primary-50 to-success-50">
-            <h2 className="text-2xl font-bold mb-4 text-center">Still need help?</h2>
-            <p className="text-gray-600 text-center mb-6">Our support team is here to assist you</p>
-            <div className="grid md:grid-cols-3 gap-4">
-              <button className="btn btn-outline flex items-center justify-center gap-2">
-                <MessageCircle className="w-5 h-5" />
-                Live Chat
-              </button>
-              <button className="btn btn-outline flex items-center justify-center gap-2">
-                <Mail className="w-5 h-5" />
-                Email Support
-              </button>
-              <button className="btn btn-outline flex items-center justify-center gap-2">
-                <Phone className="w-5 h-5" />
-                Call Us
-              </button>
+        {/* Contact Support with Enhanced Design */}
+        <div className="max-w-5xl mx-auto">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-warning via-warning-500 to-warning-600 p-12 text-white shadow-2xl">
+            {/* Decorative Elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+            
+            <div className="relative z-10">
+              <div className="text-center mb-10">
+                <h2 className="text-4xl font-bold mb-3">Still Need Help?</h2>
+                <p className="text-xl text-warning-100">Our dedicated support team is ready to assist you 24/7</p>
+              </div>
+              
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/30 transition-all cursor-pointer group">
+                  <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <MessageCircle className="w-7 h-7 text-warning" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Live Chat</h3>
+                  <p className="text-warning-100">Chat with us instantly</p>
+                </div>
+                
+                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/30 transition-all cursor-pointer group">
+                  <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Mail className="w-7 h-7 text-warning" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Email Support</h3>
+                  <p className="text-warning-100">support@alphanifty.com</p>
+                </div>
+                
+                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/30 transition-all cursor-pointer group">
+                  <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Phone className="w-7 h-7 text-warning" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Call Us</h3>
+                  <p className="text-warning-100">+91 XXX XXX XXXX</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

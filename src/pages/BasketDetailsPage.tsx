@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Layers, ShoppingCart, ArrowLeft, Loader, TrendingUp, PieChart, BarChart3 } from 'lucide-react';
+import { Layers, ShoppingCart, ArrowLeft, Loader, TrendingUp, PieChart, BarChart3, ChevronDown, ChevronUp, FileText } from 'lucide-react';
+import { getRandomQuote } from '../utils/investmentQuotes';
 import { Line, Pie, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -14,9 +15,11 @@ import {
   Tooltip,
   Legend,
   Filler,
+  TimeScale,
 } from 'chart.js';
+import 'chartjs-adapter-date-fns';
 
-import { basketApi, Basket as ApiBasket, cartApi } from '../services/api';
+import { basketApi, Basket as ApiBasket, cartApi, fundApi } from '../services/api';
 import useCart from '../context/CartContext';
 
 /* ================= CHART REGISTER ================= */
@@ -30,7 +33,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  TimeScale
 );
 
 /* ================= TYPES ================= */
@@ -50,11 +54,13 @@ interface TopHolding {
   stockName: string;
   percent: number;
   sector: string;
+  type?: 'Equity' | 'Debt';
 }
 
 interface PerformancePoint {
   label: string;
   portfolioValue: number;
+  smartSipValue?: number;
   niftyValue: number;
 }
 
@@ -71,10 +77,13 @@ const BasketDetailsPage: React.FC = () => {
 
   const [performanceData, setPerformanceData] = useState<PerformancePoint[]>([]);
   const [performanceLoading, setPerformanceLoading] = useState(false);
+  const [performanceLoaded, setPerformanceLoaded] = useState(false);
 
   const [investmentAmount, setInvestmentAmount] = useState(10000);
   const [investmentType, setInvestmentType] = useState<'SIP' | 'Lumpsum'>('SIP');
-  const [timeRange, setTimeRange] = useState<'1Y' | '3Y' | '5Y' | '10Y'>('5Y');
+  const [timeRange, setTimeRange] = useState<'1M' | '6M' | 'YTD' | '1Y' | '3Y' | '5Y' | 'All'>('1Y');
+  const [equityExpanded, setEquityExpanded] = useState(false);
+  const [debtExpanded, setDebtExpanded] = useState(false);
 
   /* ================= FETCH BASKET ================= */
   useEffect(() => {
@@ -86,6 +95,8 @@ const BasketDetailsPage: React.FC = () => {
         const res = await basketApi.getById(basketId);
         if (res.status === 'success' && res.data) {
           setBasket(res.data);
+          // Set initial investment amount to basket's minimum investment
+          setInvestmentAmount(res.data.minInvestment || 10000);
         } else {
           setError(res.message || 'Basket not found');
         }
@@ -98,20 +109,44 @@ const BasketDetailsPage: React.FC = () => {
 
     fetchBasket();
   }, [basketId]);
-
-  /* ================= FETCH PERFORMANCE ================= */
+  
+  /* ================= LAZY LOAD PERFORMANCE ON MOUNT ================= */
   useEffect(() => {
-    if (!basketId) return;
+    // Auto-load performance data after basket loads (with small delay to prioritize basket data)
+    if (basket && !performanceLoaded) {
+      const timer = setTimeout(() => {
+        setPerformanceLoaded(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [basket, performanceLoaded]);
+
+  /* ================= FETCH PERFORMANCE (LAZY LOAD) ================= */
+  useEffect(() => {
+    if (!basketId || !performanceLoaded) return;
 
     const fetchPerformance = async () => {
       try {
         setPerformanceLoading(true);
-        const res = await fetch(
-          `http://127.0.0.1:5000/api/baskets/${basketId}/excel-performance?period=${timeRange}`
+        const API_BASE = import.meta.env.VITE_API_URL || (
+          import.meta.env.DEV 
+            ? 'http://localhost:5000/api'
+            : 'https://app.vsfintech.in/alphanifty/api'
         );
-        const json = await res.json();
-        setPerformanceData(json?.data?.performance || []);
+        const res = await fetch(
+          `${API_BASE}/baskets/${basketId}/excel-performance?period=${timeRange}`
+        );
+        
+        // Only process if response is OK
+        if (res.ok) {
+          const json = await res.json();
+          setPerformanceData(json?.data?.performance || []);
+        } else {
+          // Silently skip if endpoint not available
+          setPerformanceData([]);
+        }
       } catch {
+        // Silently skip on error
         setPerformanceData([]);
       } finally {
         setPerformanceLoading(false);
@@ -123,19 +158,29 @@ const BasketDetailsPage: React.FC = () => {
 
   /* ================= LOADING / ERROR ================= */
   if (loading) {
+    const quote = getRandomQuote();
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader className="w-10 h-10 animate-spin text-primary" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50 flex flex-col items-center justify-center px-6">
+        <Loader className="w-16 h-16 animate-spin text-primary mb-4" />
+        <p className="text-gray-600 text-lg mb-6">Loading basket details...</p>
+        <div className="max-w-2xl text-center">
+          <p className="text-sm text-gray-500 italic">"{quote}"</p>
+        </div>
       </div>
     );
   }
 
   if (!basket || error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50 flex items-center justify-center">
+        <div className="text-center bg-white rounded-3xl shadow-2xl p-10 max-w-md">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <p className="text-red-600 font-bold text-xl mb-2">Basket not found</p>
+          <p className="text-gray-600 mb-6">{error}</p>
           <button onClick={() => navigate('/explore-baskets')} className="btn btn-primary">
+            <ArrowLeft className="w-5 h-5" />
             Back to Baskets
           </button>
         </div>
@@ -150,6 +195,9 @@ const BasketDetailsPage: React.FC = () => {
 
   /* ================= PROJECTION CALCULATIONS ================= */
   const years =
+    timeRange === '1M' ? 1/12 :
+    timeRange === '6M' ? 0.5 :
+    timeRange === 'YTD' ? (new Date().getMonth() + 1) / 12 :
     timeRange === '1Y' ? 1 :
     timeRange === '3Y' ? 3 :
     timeRange === '5Y' ? 5 : 10;
@@ -203,6 +251,58 @@ const BasketDetailsPage: React.FC = () => {
     }
   };
 
+  /* ================= FUND NAVIGATION ================= */
+  const handleFundClick = async (fundName: string, fundId: string) => {
+    try {
+      // Extract the core fund name without plan/growth suffixes
+      const coreName = fundName
+        .replace(/\s*-?\s*(Regular|Direct)\s*(Plan)?/gi, '')
+        .replace(/\s*-?\s*(Growth|Dividend|IDCW)\s*(Plan)?/gi, '')
+        .replace(/\((G|D|R|RP|DP)\)/gi, '')
+        .trim();
+      
+      // Search for the fund by core name
+      const response = await fundApi.getAll({
+        search: coreName,
+        limit: 20
+      });
+      
+      if (response.status === 'success' && response.data && response.data.length > 0) {
+        // Priority order: Direct Growth > Regular Growth > Direct Dividend > Regular Dividend > Any
+        const priorityOrder = [
+          /Direct.*Growth/i,
+          /Growth.*Direct/i,
+          /Direct/i,
+          /Growth/i,
+          /Regular.*Growth/i,
+          /.*/  // Any fund as fallback
+        ];
+        
+        let bestMatch = null;
+        for (const pattern of priorityOrder) {
+          bestMatch = response.data.find((f: any) => {
+            const fullName = f.name || f.scheme_name || '';
+            return fullName.match(pattern) && 
+                   fullName.toLowerCase().includes(coreName.toLowerCase());
+          });
+          if (bestMatch) break;
+        }
+        
+        if (bestMatch) {
+          navigate(`/fund/${bestMatch.id || bestMatch.scheme_code}`);
+        } else {
+          // Use first result if no match with priority
+          navigate(`/fund/${response.data[0].id || response.data[0].scheme_code}`);
+        }
+      } else {
+        alert('Fund not found. Try searching manually.');
+      }
+    } catch (error) {
+      console.error('Error finding fund:', error);
+      alert('Error finding fund details');
+    }
+  };
+
   /* ================= RENDER ================= */
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -240,6 +340,12 @@ const BasketDetailsPage: React.FC = () => {
                   <p className="text-sm text-gray-500">Min Investment</p>
                   <p className="font-semibold text-primary">₹{basket.minInvestment.toLocaleString('en-IN')}</p>
                 </div>
+                {basket.averageReturn && (
+                  <div>
+                    <p className="text-sm text-gray-500">Average Return</p>
+                    <p className="font-bold text-success text-2xl">{basket.averageReturn}%</p>
+                  </div>
+                )}
                 {basket.cagr5Y && (
                   <div>
                     <p className="text-sm text-gray-500">5Y CAGR</p>
@@ -257,75 +363,207 @@ const BasketDetailsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Performance Chart */}
-        {performanceData && performanceData.length > 0 && (
+        {/* About This Basket */}
+        {(basket.philosophy || basket.rationale || basket.suitableFor) && (
           <div className="card p-6 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-primary" />
-                Performance Trend
-              </h2>
-              <div className="flex gap-2">
-                {(['1Y', '3Y', '5Y', '10Y'] as const).map(range => (
-                  <button
-                    key={range}
-                    onClick={() => setTimeRange(range)}
-                    className={`px-3 py-1 rounded text-sm ${
-                      timeRange === range
-                        ? 'bg-primary text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                  >
-                    {range}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <h2 className="text-xl font-bold mb-4">About This Basket</h2>
             
-            {performanceLoading ? (
-              <div className="h-64 flex items-center justify-center">
-                <Loader className="w-8 h-8 animate-spin text-primary" />
-              </div>
-            ) : (
-              <div className="h-64">
-                <Line
-                  data={{
-                    labels: performanceData.map(p => p.label),
-                    datasets: [
-                      {
-                        label: basket.name,
-                        data: performanceData.map(p => p.portfolioValue),
-                        borderColor: basket.color || '#2E89C4',
-                        backgroundColor: `${basket.color || '#2E89C4'}20`,
-                        fill: true,
-                        tension: 0.4,
-                      },
-                      {
-                        label: 'Nifty 50',
-                        data: performanceData.map(p => p.niftyValue),
-                        borderColor: '#EF4444',
-                        backgroundColor: '#EF444420',
-                        fill: true,
-                        tension: 0.4,
-                      },
-                    ],
-                  }}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: { position: 'top' as const },
-                      tooltip: { mode: 'index', intersect: false },
-                    },
-                    scales: {
-                      y: { beginAtZero: false },
-                    },
-                  }}
-                />
+            {basket.philosophy && (
+              <div className="mb-4">
+                <h3 className="font-semibold text-primary mb-2">Investment Philosophy</h3>
+                <p className="text-gray-700">{basket.philosophy}</p>
               </div>
             )}
+            
+            {basket.rationale && (
+              <div className="mb-4">
+                <h3 className="font-semibold text-primary mb-2">Strategy & Rationale</h3>
+                <p className="text-gray-700">{basket.rationale}</p>
+              </div>
+            )}
+            
+            {basket.suitableFor && (
+              <div className="mb-4">
+                <h3 className="font-semibold text-primary mb-2">Suitable For</h3>
+                <p className="text-gray-700">{basket.suitableFor}</p>
+              </div>
+            )}
+            
+            <div className="grid md:grid-cols-3 gap-4 mt-6 pt-4 border-t">
+              {basket.timeHorizon && (
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Time Horizon</p>
+                  <p className="font-semibold">{basket.timeHorizon}</p>
+                </div>
+              )}
+              {basket.experienceLevel && (
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Experience Level</p>
+                  <p className="font-semibold">{basket.experienceLevel}</p>
+                </div>
+              )}
+              {basket.rebalancingFrequency && (
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Rebalancing</p>
+                  <p className="font-semibold">{basket.rebalancingFrequency}</p>
+                </div>
+              )}
+            </div>
           </div>
         )}
+
+        {/* Risk Metrics */}
+        {(basket.sharpeRatio || basket.riskPercentage) && (
+          <div className="card p-6 mb-6">
+            <h2 className="text-xl font-bold mb-4">Risk Metrics</h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {basket.sharpeRatio && (
+                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-500 mb-1">Sharpe Ratio</p>
+                  <p className="text-2xl font-bold text-primary">{basket.sharpeRatio}</p>
+                  <p className="text-xs text-gray-500 mt-1">Risk-adjusted return</p>
+                </div>
+              )}
+              {basket.riskPercentage && (
+                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-500 mb-1">Volatility</p>
+                  <p className="text-2xl font-bold text-orange-600">{basket.riskPercentage}%</p>
+                  <p className="text-xs text-gray-500 mt-1">Standard deviation</p>
+                </div>
+              )}
+              {basket.riskLevel && (
+                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-500 mb-1">Risk Level</p>
+                  <p className={`text-2xl font-bold ${
+                    basket.riskLevel === 'High' ? 'text-red-600' : 
+                    basket.riskLevel === 'Medium' ? 'text-yellow-600' : 
+                    'text-green-600'
+                  }`}>{basket.riskLevel}</p>
+                  <p className="text-xs text-gray-500 mt-1">Overall risk rating</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Performance Chart */}
+        <div className="card p-6 mb-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              Performance Trend
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {(['1M', '6M', 'YTD', '1Y', '3Y', '5Y', 'All'] as const).map(range => (
+                <button
+                  key={range}
+                  onClick={() => {
+                    setTimeRange(range);
+                    if (!performanceLoaded) setPerformanceLoaded(true);
+                  }}
+                  className={`px-2.5 sm:px-3 py-1 rounded text-xs sm:text-sm ${
+                    timeRange === range
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  {range}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {performanceLoading && (
+            <div className="flex justify-center items-center py-12">
+              <Loader className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          )}
+          
+          {!performanceLoading && performanceData && performanceData.length > 0 && (
+            <div className="h-80" style={{ paddingBottom: '20px' }}>
+              <Line
+                data={{
+                  labels: performanceData.map(p => p.label),
+                  datasets: [
+                    {
+                      label: 'Smart SIP',
+                      data: performanceData.map(p => p.smartSipValue || p.portfolioValue * 1.5),
+                      borderColor: '#059669',
+                      backgroundColor: '#05966920',
+                      fill: true,
+                      tension: 0.4,
+                      borderWidth: 3,
+                      borderDash: [5, 5],
+                      pointRadius: 0,
+                      pointHoverRadius: 5,
+                    },
+                    {
+                      label: 'Basket',
+                      data: performanceData.map(p => p.portfolioValue),
+                      borderColor: '#10B981',
+                      backgroundColor: '#10B98120',
+                      fill: true,
+                      tension: 0.4,
+                      borderWidth: 3,
+                      pointRadius: 0,
+                      pointHoverRadius: 5,
+                    },
+                    {
+                      label: 'Nifty 50',
+                      data: performanceData.map(p => p.niftyValue),
+                      borderColor: '#EF4444',
+                      backgroundColor: '#EF444420',
+                      fill: true,
+                      tension: 0.4,
+                      borderWidth: 3,
+                      borderDash: [10, 5],
+                      pointRadius: 0,
+                      pointHoverRadius: 5,
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  layout: {
+                    padding: {
+                      bottom: 20
+                    }
+                  },
+                  plugins: {
+                    legend: { position: 'top' as const },
+                    tooltip: { mode: 'index', intersect: false },
+                  },
+                  scales: {
+                    x: {
+                      ticks: {
+                        maxRotation: 45,
+                        minRotation: 45,
+                        autoSkip: true,
+                        maxTicksLimit: 12
+                      }
+                    },
+                    y: { 
+                      beginAtZero: false,
+                      ticks: {
+                        callback: function(value) {
+                          return value + '%';
+                        }
+                      }
+                    },
+                  },
+                }}
+              />
+            </div>
+          )}
+          
+          {!performanceLoading && (!performanceData || performanceData.length === 0) && (
+            <div className="text-center py-12 text-gray-500">
+              <TrendingUp className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+              <p>Click a time range to load performance data</p>
+            </div>
+          )}
+        </div>
 
         {/* Charts Row - Sector and Fund Allocation */}
         <div className="grid md:grid-cols-2 gap-6 mb-6">
@@ -377,7 +615,12 @@ const BasketDetailsPage: React.FC = () => {
                 {fundAllocations.map((fund, idx) => (
                   <div key={idx}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium">{fund.fundName}</span>
+                      <button
+                        onClick={() => handleFundClick(fund.fundName, fund.fundId)}
+                        className="font-medium text-primary hover:text-primary-dark hover:underline cursor-pointer text-left transition-colors"
+                      >
+                        {fund.fundName}
+                      </button>
                       <span className="text-gray-600">{fund.allocationPercent}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -395,78 +638,77 @@ const BasketDetailsPage: React.FC = () => {
 
         {/* Top Holdings */}
         {topHoldings && topHoldings.length > 0 && (
-          <div className="card p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">Top Holdings</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-2">Stock</th>
-                    <th className="text-left py-3 px-2">Sector</th>
-                    <th className="text-right py-3 px-2">Allocation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topHoldings.map((holding, idx) => (
-                    <tr key={idx} className="border-b">
-                      <td className="py-3 px-2 font-medium">{holding.stockName}</td>
-                      <td className="py-3 px-2 text-gray-600">{holding.sector}</td>
-                      <td className="py-3 px-2 text-right font-semibold">{holding.percent}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+          <>
+            {/* Equity Holdings */}
+            {topHoldings.filter(h => h.type === 'Equity').length > 0 && (
+              <div className="card p-6 mb-6">
+                <div 
+                  className="flex justify-between items-center cursor-pointer"
+                  onClick={() => setEquityExpanded(!equityExpanded)}
+                >
+                  <h2 className="text-xl font-bold">Equity Holdings</h2>
+                  {equityExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                </div>
+                {equityExpanded && (
+                  <div className="overflow-x-auto mt-4">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-3 px-2">Stock</th>
+                          <th className="text-left py-3 px-2">Sector</th>
+                          <th className="text-right py-3 px-2">Allocation</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {topHoldings.filter(h => h.type === 'Equity').map((holding, idx) => (
+                          <tr key={idx} className="border-b">
+                            <td className="py-3 px-2 font-medium">{holding.stockName}</td>
+                            <td className="py-3 px-2 text-gray-600">{holding.sector}</td>
+                            <td className="py-3 px-2 text-right font-semibold">{holding.percent}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
 
-        {/* About This Basket */}
-        {(basket.philosophy || basket.rationale || basket.suitableFor) && (
-          <div className="card p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">About This Basket</h2>
-            
-            {basket.philosophy && (
-              <div className="mb-4">
-                <h3 className="font-semibold text-primary mb-2">Investment Philosophy</h3>
-                <p className="text-gray-700">{basket.philosophy}</p>
+            {/* Debt Holdings */}
+            {topHoldings.filter(h => h.type === 'Debt').length > 0 && (
+              <div className="card p-6 mb-6">
+                <div 
+                  className="flex justify-between items-center cursor-pointer"
+                  onClick={() => setDebtExpanded(!debtExpanded)}
+                >
+                  <h2 className="text-xl font-bold">Debt Holdings</h2>
+                  {debtExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                </div>
+                {debtExpanded && (
+                  <div className="overflow-x-auto mt-4">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-3 px-2">Instrument</th>
+                          <th className="text-left py-3 px-2">Type</th>
+                          <th className="text-right py-3 px-2">Allocation</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {topHoldings.filter(h => h.type === 'Debt').map((holding, idx) => (
+                          <tr key={idx} className="border-b">
+                            <td className="py-3 px-2 font-medium">{holding.stockName}</td>
+                            <td className="py-3 px-2 text-gray-600">{holding.sector}</td>
+                            <td className="py-3 px-2 text-right font-semibold">{holding.percent}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             )}
-            
-            {basket.rationale && (
-              <div className="mb-4">
-                <h3 className="font-semibold text-primary mb-2">Strategy & Rationale</h3>
-                <p className="text-gray-700">{basket.rationale}</p>
-              </div>
-            )}
-            
-            {basket.suitableFor && (
-              <div className="mb-4">
-                <h3 className="font-semibold text-primary mb-2">Suitable For</h3>
-                <p className="text-gray-700">{basket.suitableFor}</p>
-              </div>
-            )}
-            
-            <div className="grid md:grid-cols-3 gap-4 mt-6 pt-4 border-t">
-              {basket.timeHorizon && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Time Horizon</p>
-                  <p className="font-semibold">{basket.timeHorizon}</p>
-                </div>
-              )}
-              {basket.experienceLevel && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Experience Level</p>
-                  <p className="font-semibold">{basket.experienceLevel}</p>
-                </div>
-              )}
-              {basket.rebalancingFrequency && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Rebalancing</p>
-                  <p className="font-semibold">{basket.rebalancingFrequency}</p>
-                </div>
-              )}
-            </div>
-          </div>
+          </>
         )}
 
         {/* Investment Goals */}
@@ -482,40 +724,6 @@ const BasketDetailsPage: React.FC = () => {
                   {goal}
                 </span>
               ))}
-            </div>
-          </div>
-        )}
-
-        {/* Risk Metrics */}
-        {(basket.sharpeRatio || basket.riskPercentage) && (
-          <div className="card p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">Risk Metrics</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {basket.sharpeRatio && (
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-500 mb-1">Sharpe Ratio</p>
-                  <p className="text-2xl font-bold text-primary">{basket.sharpeRatio}</p>
-                  <p className="text-xs text-gray-500 mt-1">Risk-adjusted return</p>
-                </div>
-              )}
-              {basket.riskPercentage && (
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-500 mb-1">Volatility</p>
-                  <p className="text-2xl font-bold text-orange-600">{basket.riskPercentage}%</p>
-                  <p className="text-xs text-gray-500 mt-1">Standard deviation</p>
-                </div>
-              )}
-              {basket.riskLevel && (
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-500 mb-1">Risk Level</p>
-                  <p className={`text-2xl font-bold ${
-                    basket.riskLevel === 'High' ? 'text-red-600' : 
-                    basket.riskLevel === 'Medium' ? 'text-yellow-600' : 
-                    'text-green-600'
-                  }`}>{basket.riskLevel}</p>
-                  <p className="text-xs text-gray-500 mt-1">Overall risk rating</p>
-                </div>
-              )}
             </div>
           </div>
         )}
@@ -554,7 +762,7 @@ const BasketDetailsPage: React.FC = () => {
             <div>
               <label className="block text-sm font-medium mb-2">Time Horizon</label>
               <div className="flex gap-2">
-                {(['1Y', '3Y', '5Y', '10Y'] as const).map(range => (
+                {(['1Y', '3Y', '5Y', 'All'] as const).map(range => (
                   <button
                     key={range}
                     onClick={() => setTimeRange(range)}
@@ -581,6 +789,7 @@ const BasketDetailsPage: React.FC = () => {
               step={500}
               value={investmentAmount}
               onChange={(e) => setInvestmentAmount(Number(e.target.value))}
+              aria-label={`${investmentType === 'SIP' ? 'Monthly' : 'Investment'} Amount`}
               className="input w-full"
             />
           </div>
@@ -622,7 +831,12 @@ const BasketDetailsPage: React.FC = () => {
                   const amount = (investmentAmount * fund.allocationPercent) / 100;
                   return (
                     <div key={idx} className="flex justify-between text-sm">
-                      <span>{fund.fundName}</span>
+                      <button
+                        onClick={() => handleFundClick(fund.fundName, fund.fundId)}
+                        className="text-primary hover:text-primary-dark hover:underline cursor-pointer transition-colors text-left"
+                      >
+                        {fund.fundName}
+                      </button>
                       <span className="font-semibold">₹{amount.toLocaleString('en-IN')}</span>
                     </div>
                   );
@@ -631,10 +845,15 @@ const BasketDetailsPage: React.FC = () => {
             </div>
           )}
 
-          <button onClick={handleAddToCart} className="btn btn-success w-full">
+          <a
+            href="https://fund.alphanifty.com/login?authpage=basket"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-success w-full flex items-center justify-center gap-2"
+          >
             <ShoppingCart className="w-5 h-5" />
             Add to Cart - ₹{investmentAmount.toLocaleString('en-IN')}
-          </button>
+          </a>
         </div>
 
       </div>

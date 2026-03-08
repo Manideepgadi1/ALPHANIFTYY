@@ -1,14 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const SignInPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isAuthenticated, isGuest, continueAsGuest, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect if already authenticated (but NOT if guest - guests can sign in)
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      const returnUrl = (location.state as any)?.from?.pathname || '/';
+      navigate(returnUrl);
+    }
+  }, [isAuthenticated, authLoading, navigate, location]);
+
+  const handleGuestContinue = () => {
+    continueAsGuest();
+    const returnUrl = (location.state as any)?.from?.pathname || '/';
+    navigate(returnUrl);
+  };
 
   const validateEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -41,28 +58,51 @@ const SignInPage: React.FC = () => {
     setErrors({});
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Use AuthContext login
+      await login(email, password);
+      
+      // Redirect to return URL or home page
+      const returnUrl = (location.state as any)?.from?.pathname || '/';
+      navigate(returnUrl);
+    } catch (error: any) {
       setIsLoading(false);
-      // In production, implement actual authentication
-      alert('Sign in successful! (This is a demo)');
-      navigate('/dashboard');
-    }, 1500);
+      setErrors({
+        general: error.message || 'Invalid email or password. Please try again.'
+      });
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 pt-24 pb-20">
-      <div className="container mx-auto px-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-success-50 pt-24 pb-20 relative overflow-hidden">
+      {/* Decorative Background */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 right-20 w-96 h-96 bg-primary rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-20 w-96 h-96 bg-success rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-md mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-gray-600">Sign in to continue your investment journey</p>
+          {/* Header with Enhanced Design */}
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 bg-white rounded-full px-5 py-2 mb-4 shadow-sm border border-primary-200">
+              <Lock className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-primary">Secure Login</span>
+            </div>
+            <h1 className="text-5xl font-bold text-gray-900 mb-3">Welcome Back</h1>
+            <p className="text-lg text-gray-600">Sign in to continue your investment journey</p>
           </div>
 
-          {/* Sign In Card */}
-          <div className="bg-white rounded-3xl shadow-xl p-8">
+          {/* Sign In Card with Enhanced Shadow */}
+          <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-10">
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* General Error Message */}
+              {errors.general && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                  <p className="text-sm text-red-600 font-medium">{errors.general}</p>
+                </div>
+              )}
+
               {/* Email */}
               <div>
                 <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -122,12 +162,12 @@ const SignInPage: React.FC = () => {
 
               {/* Forgot Password */}
               <div className="flex justify-end">
-                <button
-                  type="button"
-                  className="text-sm text-primary hover:text-primary/80 font-semibold"
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-primary hover:text-primary/80 font-semibold transition-colors"
                 >
                   Forgot Password?
-                </button>
+                </Link>
               </div>
 
               {/* Submit Button */}
@@ -162,11 +202,15 @@ const SignInPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Social Sign In */}
+            {/* Continue as Guest */}
             <div className="space-y-3">
-              <button className="w-full flex items-center justify-center gap-3 py-3 px-4 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors font-semibold text-gray-700">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
-                Continue with Google
+              <button 
+                type="button"
+                onClick={handleGuestContinue}
+                className="w-full flex items-center justify-center gap-3 py-3 px-4 border-2 border-primary-200 rounded-xl hover:bg-primary-50 transition-colors font-semibold text-primary"
+              >
+                <ArrowRight className="w-5 h-5" />
+                Continue as Guest
               </button>
             </div>
 

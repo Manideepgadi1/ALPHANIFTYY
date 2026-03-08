@@ -95,8 +95,21 @@ const LumpsumCalculatorPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-success-50 py-12">
       <div className="container-main">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-success-100 rounded-full px-5 py-2 mb-4">
+            <Wallet className="w-4 h-4 text-success" />
+            <span className="text-sm font-semibold text-success">Lumpsum Investment Tool</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+            <span className="text-success">Lumpsum</span> Calculator
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Calculate returns on your one-time investment with compound growth
+          </p>
+        </div>
+
         <div className="text-center mb-8">
           <Wallet className="w-10 h-10 mx-auto mb-2 text-success" />
           <h1 className="text-4xl font-bold">Lumpsum Calculator</h1>
@@ -115,8 +128,16 @@ const LumpsumCalculatorPage: React.FC = () => {
               id="principal"
               type="number"
               className="input mb-4"
+              min="0"
               value={principal}
-              onChange={(e) => setPrincipal(Number(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value.replace(/^0+/, '') || '0';
+                setPrincipal(val === '' ? 0 : parseInt(val, 10) || 0);
+              }}
+              onBlur={(e) => {
+                const val = e.target.value.replace(/^0+/, '') || '0';
+                setPrincipal(parseInt(val, 10) || 0);
+              }}
             />
 
             <label htmlFor="return" className="block mb-1">
@@ -126,8 +147,13 @@ const LumpsumCalculatorPage: React.FC = () => {
               id="return"
               type="number"
               className="input mb-4"
+              min="0"
+              step="0.1"
               value={expectedReturn}
-              onChange={(e) => setExpectedReturn(Number(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value;
+                setExpectedReturn(val === '' ? 0 : parseFloat(val) || 0);
+              }}
             />
 
             <label htmlFor="years" className="block mb-1">
@@ -137,8 +163,12 @@ const LumpsumCalculatorPage: React.FC = () => {
               id="years"
               type="number"
               className="input"
+              min="1"
               value={timePeriod}
-              onChange={(e) => setTimePeriod(Number(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value;
+                setTimePeriod(val === '' ? 1 : parseInt(val, 10) || 1);
+              }}
             />
           </div>
 

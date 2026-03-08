@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor's Premium Basket - Performance Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #718096;
+            font-size: 1.1em;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .time-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .time-button {
+            padding: 10px 20px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #4a5568;
+            transition: all 0.3s;
+        }
+        
+        .time-button:hover {
+            background: #f7fafc;
+            border-color: #667eea;
+        }
+        
+        .time-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+            font-size: 1.2em;
+        }
+        
+        .funds-list {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .funds-list h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .fund-item {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .fund-item:last-child {
+            border-bottom: none;
+        }
+        
+        .fund-name {
+            color: #2d3748;
+            font-weight: 500;
+        }
+        
+        .fund-allocation {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .info-note {
+            background: #edf2f7;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎉 Doctor's Premium Basket</h1>
+            <p>Diversified multi-asset allocation basket for balanced growth and stability</p>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-label">1 Year CAGR</div>
+                    <div class="stat-value">7.04%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">3 Year CAGR</div>
+                    <div class="stat-value">17.78%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">5 Year CAGR</div>
+                    <div class="stat-value">18.18%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Expected Return</div>
+                    <div class="stat-value">15.25%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chart -->
+        <div class="chart-container">
+            <h2> </h2> style="color: #2d3748; margin-bottom: 15px;">Performance vs Nifty 50</h2>
+            
+            <div class="info-note">
+                <strong>📊 Normalized Graph:</strong> The graph always starts at 100 for any time period selected. This allows fair comparison between different time ranges. Both Doctor's Premium Basket and Nifty 50 are normalized to the same starting point.
+            </div>
+            
+            <div></div> class="time-buttons">
+                <button class="time-button" data-period="1M">1 Month</button>
+                <button class="time-button" data-period="6M">6 Months</button>
+                <button class="time-button" data-period="YTD">YTD</button>
+                <button class="time-button active" data-period="1Y">1 Year</button>
+                <button class="time-button" data-period="3Y">3 Years</button>
+                <button class="time-button" data-period="5Y">5 Years</button>
+                <button class="time-button" data-period="All">All Time</button>
+            </div>
+            
+            <div id="loading" class="loading">Loading chart data...</div>
+            <canvas> </canvas>id="performanceChart" style="display: none;"></canvas>
+        </div>
+        
+        <!-- Funds List -->
+        <div class="funds-list">
+            <h2>Fund Allocation (Total: 100%)</h2>
+            <div class="fund-item">
+                <div class="fund-name">ICICI Prudential Multi-Asset Fund - Growth</div>
+                <div class="fund-allocation">17%</div>
+            </div>
+            <div class="fund-item">
+                <div class="fund-name">NIPPON INDIA BANKING & FINANCIAL SERVICES FUND - GROWTH PLAN</div>
+                <div class="fund-allocation">17%</div>
+            </div>
+            <div class="fund-item">
+                <div class="fund-name">SBI Technology Opportunities Fund Regular Growth</div>
+                <div class="fund-allocation">17%</div>
+            </div>
+            <div class="fund-item">
+                <div class="fund-name">Mirae Asset Nifty MidSmallcap400 Momentum Quality 100 ETF Fund of Fund</div>
+                <div class="fund-allocation">17%</div>
+            </div>
+            <div class="fund-item">
+                <div class="fund-name">Aditya Birla Sun Life Consumption Fund - Growth-Regular Plan</div>
+                <div class="fund-allocation">17%</div>
+            </div>
+            <div class="fund-item">
+                <div class="fund-name">ICICI Prudential Exports and Services Fund - Growth</div>
+                <div class="fund-allocation">15%</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chart = null;
+        let currentPeriod = '1Y';
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setupTimeButtons();
+            loadChartData(currentPeriod);
+        });
+        
+        // Setup time period buttons
+        function setupTimeButtons() {
+            const buttons = document.querySelectorAll('.time-button');
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    button.classList.add('active');
+                    currentPeriod = button.dataset.period;
+                    loadChartData(currentPeriod);
+                });
+            });
+        }
+        
+        // Load chart data
+        async function loadChartData(period) {
+            const loading = document.getElementById('loading');
+            const canvas = document.getElementById('performanceChart');
+            
+            loading.style.display = 'block';
+            canvas.style.display = 'none';
+            
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/api/baskets/b16/excel-performance?period=${period}`);
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data.performance) {
+                    renderChart(result.data.performance);
+                    loading.style.display = 'none';
+                    canvas.style.display = 'block';
+                } else {
+                    loading.textContent = 'Error loading data';
+                }
+            } catch (error) {
+                loading.textContent = 'Failed to connect to backend. Make sure the backend server is running on http://127.0.0.1:5000';
+                console.error('Error:', error);
+            }
+        }
+        
+        // Render chart
+        function renderChart(data) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.label),
+                    datasets: [
+                        {
+                            label: 'Doctor\'s Premium Basket',
+                            data: data.map(d => d.portfolioValue),
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                        },
+                        {
+                            label: 'Nifty 50',
+                            data: data.map(d => d.niftyValue),
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                padding: 20,
+                                usePointStyle: true,
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                font: {
+                                    size: 12
+                                },
+                                callback: function(value) {
+                                    return value.toFixed(0);
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Normalized Value (Base = 100)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 11
+                                },
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

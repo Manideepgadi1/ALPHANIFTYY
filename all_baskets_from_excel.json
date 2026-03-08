@@ -1,0 +1,54 @@
+{
+  "1_Sankranthi Basket": [
+    {
+      "name": "ICICI Prudential Multi-Asset Fund - Growth",
+      "allocation": 18.43
+    },
+    {
+      "name": "NIPPON INDIA BANKING & FINANCIAL SERVICES FUND - GROWTH PLAN",
+      "allocation": 10.76
+    },
+    {
+      "name": "SBI Technology Opportunities Fund Regular Growth",
+      "allocation": 4.87
+    },
+    {
+      "name": "Aditya Birla Sun Life Consumption Fund - Growth-Regular Plan(Formerly known as Aditya Birla Sun Life",
+      "allocation": 3.72
+    },
+    {
+      "name": "Mirae Asset Nifty MidSmallcap400 Momentum Quality 100 ETF Fund of Fund - Regular Plan",
+      "allocation": 2.99
+    },
+    {
+      "name": "ICICI Prudential Exports and Services Fund - Growth",
+      "allocation": 2.6
+    }
+  ],
+  "1_Aggressive Basket": [
+    {
+      "name": "ICICI Prudential Active Momentum Fund - Growth",
+      "allocation": 14.6
+    },
+    {
+      "name": "NIPPON INDIA BANKING & FINANCIAL SERVICES FUND - GROWTH PLAN",
+      "allocation": 13.12
+    },
+    {
+      "name": "ICICI Prudential Technology Fund - Growth",
+      "allocation": 4.77
+    },
+    {
+      "name": "SBI Consumption Opportunities Fund Regular Growth",
+      "allocation": 4.43
+    },
+    {
+      "name": "Mirae Asset Nifty Smallcap 250 Momentum Quality 100 ETF Fund of Fund - Regular Plan",
+      "allocation": 4.26
+    },
+    {
+      "name": "DSP Multi Asset Allocation Fund - Regular - Growth",
+      "allocation": 3.77
+    }
+  ]
+}

@@ -37,24 +37,28 @@ const MyBasketsPage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50 py-12">
       <div className="container-main">
         <button
           onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors mb-6"
+          className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors mb-6 font-semibold"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Dashboard
         </button>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">My Baskets</h1>
-            <p className="text-gray-600">Your personalized investment baskets</p>
+            <div className="inline-flex items-center gap-2 bg-primary-100 rounded-full px-5 py-2 mb-4">
+              <Layers className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-primary">My Investments</span>
+            </div>
+            <h1 className="text-5xl font-bold text-gray-900 mb-3">My <span className="text-primary">Baskets</span></h1>
+            <p className="text-xl text-gray-600">Track and manage your personalized investment portfolios</p>
           </div>
           <button
             onClick={() => navigate('/explore-baskets')}
-            className="mt-4 sm:mt-0 btn btn-success flex items-center gap-2"
+            className="mt-4 sm:mt-0 btn btn-success flex items-center gap-2 shadow-lg hover:shadow-xl"
           >
             <Plus className="w-5 h-5" />
             Explore More
@@ -83,6 +87,7 @@ const MyBasketsPage: React.FC = () => {
               value={riskFilter}
               onChange={(e) => setRiskFilter(e.target.value)}
               className="input w-full"
+              aria-label="Filter by risk level"
             >
               {riskLevels.map(risk => (
                 <option key={risk} value={risk}>

@@ -1,0 +1,46 @@
+{
+  "SIP Diversified Portfolio": [
+    {
+      "fundName": "Invesco India Midcap Fund - Regular Plan",
+      "allocationPercent": 18.28
+    },
+    {
+      "fundName": "Bandhan Small Cap Fund-Regular Plan-Growth",
+      "allocationPercent": 5.03
+    },
+    {
+      "fundName": "HDFC Flexi Cap Fund - Regular Plan - Growth",
+      "allocationPercent": 4.26
+    },
+    {
+      "fundName": "ICICI Prudential Large Cap Fund (erstwhile Bluechip Fund) - Growth",
+      "allocationPercent": 4.08
+    },
+    {
+      "fundName": "NIPPON INDIA MULTI ASSET ALLOCATION FUND - GROWTH PLAN",
+      "allocationPercent": 3.82
+    }
+  ],
+  "SIP_Aggressive_Portfolio": [
+    {
+      "fundName": "Bandhan Small Cap Fund-Regular Plan-Growth",
+      "allocationPercent": 15.42
+    },
+    {
+      "fundName": "HDFC Non-Cyclical Consumer Fund Regular Growth",
+      "allocationPercent": 14.96
+    },
+    {
+      "fundName": "NIPPON INDIA BANKING & FINANCIAL SERVICES FUND - GROWTH PLAN",
+      "allocationPercent": 5.88
+    },
+    {
+      "fundName": "Tata Digital India Fund Regular Plan Growth",
+      "allocationPercent": 4.38
+    },
+    {
+      "fundName": "Axis Mid Cap Fund - Regular Growth",
+      "allocationPercent": 3.55
+    }
+  ]
+}

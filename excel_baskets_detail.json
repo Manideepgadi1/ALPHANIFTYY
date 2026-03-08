@@ -1,0 +1,32 @@
+{
+  "1_BALANCED Premium": {
+    "funds": [
+      {
+        "name": "ICICI Prudential Banking and Financial Services Fund -",
+        "allocation": 16.67
+      },
+      {
+        "name": "NIPPON INDIA MULTI ASSET ALLOCATION FUND",
+        "allocation": 14.1
+      },
+      {
+        "name": "ICICI Prudential FMCG Fund",
+        "allocation": 4.83
+      },
+      {
+        "name": "Mirae Asset Nifty MidSmallcap400 Momentum Quality 100 ETF Fund of Fu",
+        "allocation": 4.55
+      },
+      {
+        "name": "ICICI Prudential Exports and Services Fund - Growth",
+        "allocation": 3.41
+      },
+      {
+        "name": "Aditya Birla Sun Life Digital India Fund -",
+        "allocation": 3.14
+      }
+    ],
+    "total_allocation": 46.7,
+    "fund_count": 6
+  }
+}

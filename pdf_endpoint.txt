@@ -1,0 +1,13 @@
+
+
+# PDF Download Endpoint
+@app.route('/api/baskets/pdf/<filename>', methods=['GET'])
+def download_basket_pdf(filename):
+    try:
+        pdf_path = os.path.join(os.path.dirname(__file__), 'data', filename)
+        if os.path.exists(pdf_path):
+            return send_file(pdf_path, as_attachment=True, download_name=filename)
+        else:
+            return jsonify({'status': 'error', 'message': 'PDF file not found'}), 404
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500

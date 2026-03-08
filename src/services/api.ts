@@ -2,7 +2,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || (
   import.meta.env.DEV 
     ? 'http://localhost:5000/api'
-    : '/alphanifty/api'
+    : 'https://app.vsfintech.in/alphanifty/api'
 );
 
 // Types
@@ -21,6 +21,7 @@ export interface Basket {
   cagr1Y?: number;
   cagr3Y?: number;
   cagr5Y?: number;
+  averageReturn?: number;
   risk?: 'Low' | 'Medium' | 'High';
   riskLevel?: string;
   minInvestment: number;
@@ -36,11 +37,16 @@ export interface Basket {
   suitableFor?: string;
   goals?: string[];
   rebalancingFrequency?: string;
+  excelFile?: string;
+  ageRange?: string;
+  infoFile?: string;
 }
 
 export interface Fund {
   id: number | string;
+  scheme_code?: string;
   name: string;
+  scheme_name?: string;
   amc?: string;
   fundHouse?: string;
   category: string;
@@ -56,6 +62,10 @@ export interface Fund {
   sharpe?: number;
   sharpeRatio?: number;
   minInvestment?: number;
+  inception_date?: string;
+  std_deviation?: number | string;
+  return_3year?: number | string;
+  inception_return?: number | string;
 }
 
 export interface PerformanceData {
@@ -153,8 +163,33 @@ export const basketApi = {
 };
 
 // Fund APIs
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  category?: string;
+}
+
+export interface PaginatedResponse<T> extends ApiResponse<T> {
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 export const fundApi = {
-  getAll: () => apiCall<Fund[]>('/funds'),
+  getAll: (params?: PaginationParams) => {
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.category) queryParams.append('category', params.category);
+    
+    const queryString = queryParams.toString();
+    return apiCall<Fund[]>(`/funds${queryString ? `?${queryString}` : ''}`);
+  },
   
   getById: (id: number | string) => apiCall<Fund>(`/funds/${id}`),
 };

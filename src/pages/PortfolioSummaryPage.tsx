@@ -28,18 +28,23 @@ const PortfolioSummaryPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50 flex flex-col items-center justify-center">
+        <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent mb-4"></div>
+        <p className="text-gray-600 text-lg">Loading portfolio...</p>
       </div>
     );
   }
 
   if (!portfolio) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">Unable to load portfolio</p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50 flex items-center justify-center">
+        <div className="text-center bg-white rounded-3xl shadow-2xl p-10 max-w-md">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <p className="text-red-600 font-bold text-xl mb-6">Unable to load portfolio</p>
           <button onClick={() => navigate('/dashboard')} className="btn btn-primary">
+            <ArrowLeft className="w-5 h-5" />
             Back to Dashboard
           </button>
         </div>
@@ -62,20 +67,27 @@ const PortfolioSummaryPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50 py-12">
       <div className="container-main">
         <button
           onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors mb-6"
+          className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors mb-6 font-semibold"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Dashboard
         </button>
 
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold">Portfolio Summary</h1>
-          <button className="btn btn-outline flex items-center gap-2">
-            <Download className="w-4 h-4" />
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10">
+          <div>
+            <div className="inline-flex items-center gap-2 bg-primary-100 rounded-full px-5 py-2 mb-4">
+              <PieChart className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-primary">Performance Overview</span>
+            </div>
+            <h1 className="text-5xl font-bold text-gray-900 mb-2">Portfolio <span className="text-primary">Summary</span></h1>
+            <p className="text-xl text-gray-600">Complete overview of your investment performance</p>
+          </div>
+          <button className="mt-4 md:mt-0 btn btn-outline flex items-center gap-2 shadow-lg hover:shadow-xl">
+            <Download className="w-5 h-5" />
             Export Report
           </button>
         </div>
@@ -116,8 +128,29 @@ const PortfolioSummaryPage: React.FC = () => {
         {/* Performance Chart */}
         <div className="card p-6 mb-8">
           <h2 className="text-2xl font-bold mb-6">Performance Trend</h2>
-          <div className="h-80">
-            <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
+          <div className="h-80" style={{ paddingBottom: '20px' }}>
+            <Line 
+              data={chartData} 
+              options={{ 
+                responsive: true, 
+                maintainAspectRatio: false,
+                layout: {
+                  padding: {
+                    bottom: 20
+                  }
+                },
+                scales: {
+                  x: {
+                    ticks: {
+                      maxRotation: 45,
+                      minRotation: 45,
+                      autoSkip: true,
+                      maxTicksLimit: 12
+                    }
+                  }
+                }
+              }} 
+            />
           </div>
         </div>
 

@@ -26,6 +26,7 @@ export interface Basket {
   cagr1Y: number;
   cagr3Y: number;
   cagr5Y: number;
+  averageReturn?: number;
   riskPercentage: number;
   sharpeRatio: number;
   
@@ -118,6 +119,6 @@ export interface FilterOptions {
 }
 
 export interface SortOption {
-  field: 'cagr1Y' | 'cagr3Y' | 'cagr5Y' | 'riskPercentage' | 'minInvestment' | 'sharpeRatio';
+  field: 'cagr1Y' | 'cagr3Y' | 'cagr5Y' | 'averageReturn' | 'riskPercentage' | 'minInvestment' | 'sharpeRatio';
   direction: 'asc' | 'desc';
 }

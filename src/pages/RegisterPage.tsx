@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowRight, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
+  const { register: registerUser } = useAuth();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -16,6 +18,7 @@ const RegisterPage: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
   const validateEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -81,12 +84,36 @@ const RegisterPage: React.FC = () => {
     setErrors({});
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Use AuthContext register
+      const result = await registerUser({
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password
+      });
+      
       setIsLoading(false);
-      alert('Registration successful! (This is a demo)');
-      navigate('/dashboard');
-    }, 1500);
+      
+      if (result.success) {
+        setRegistrationSuccess(true);
+        
+        // Optionally redirect to sign-in after a delay
+        setTimeout(() => {
+          navigate('/sign-in', { state: { message: 'Registration successful! Please check your email to verify your account.' } });
+        }, 3000);
+      } else {
+        // Handle registration failure (e.g., email already exists)
+        setErrors({
+          general: result.message || 'Registration failed. Please try again.'
+        });
+      }
+    } catch (error: any) {
+      setIsLoading(false);
+      setErrors({
+        general: error.message || 'Registration failed. Please try again.'
+      });
+    }
   };
 
   const passwordStrength = () => {
@@ -108,19 +135,50 @@ const RegisterPage: React.FC = () => {
   const strength = passwordStrength();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 pt-24 pb-20">
-      <div className="container mx-auto px-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-success-50 pt-24 pb-20 relative overflow-hidden">
+      {/* Decorative Background */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-20 w-96 h-96 bg-primary rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-success rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-md mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Create Account</h1>
-            <p className="text-gray-600">Start your investment journey in minutes</p>
+          {/* Header with Enhanced Design */}
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 bg-white rounded-full px-5 py-2 mb-4 shadow-sm border border-success-200">
+              <User className="w-4 h-4 text-success" />
+              <span className="text-sm font-semibold text-success">New Account</span>
+            </div>
+            <h1 className="text-5xl font-bold text-gray-900 mb-3">Create Account</h1>
+            <p className="text-lg text-gray-600">Start your investment journey with Alphanifty</p>
           </div>
 
           {/* Register Card */}
           <div className="bg-white rounded-3xl shadow-xl p-8">
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Full Name */}
+            {registrationSuccess ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Check className="w-10 h-10 text-green-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Registration Successful!</h2>
+                <p className="text-gray-600 mb-4">
+                  Please check your email <span className="font-semibold">{formData.email}</span> to verify your account.
+                </p>
+                <p className="text-sm text-gray-500">
+                  Redirecting to sign in page...
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {/* General Error Message */}
+                {errors.general && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                    <p className="text-sm text-red-600 font-medium">{errors.general}</p>
+                  </div>
+                )}
+
+                {/* Full Name */}
               <div>
                 <label htmlFor="fullName" className="block text-sm font-semibold text-gray-700 mb-2">
                   Full Name
@@ -330,6 +388,7 @@ const RegisterPage: React.FC = () => {
                 )}
               </button>
             </form>
+            )}
 
             {/* Sign In Link */}
             <div className="mt-6 text-center">

@@ -56,6 +56,7 @@ interface TopHolding {
 interface PerformancePoint {
   label: string;
   portfolioValue: number;
+  smartSipValue?: number;
   niftyValue: number;
 }
 
@@ -181,10 +182,19 @@ const BasketDetailsPage_Enhanced: React.FC = () => {
     labels: performanceData.map(p => p.label),
     datasets: [
       {
-        label: basket.name,
+        label: 'Smart SIP',
+        data: performanceData.map(p => p.smartSipValue || p.portfolioValue * 1.5),
+        borderColor: '#059669',
+        backgroundColor: '#05966920',
+        fill: true,
+        tension: 0.4,
+        borderDash: [5, 5],
+      },
+      {
+        label: 'Basket',
         data: performanceData.map(p => p.portfolioValue),
-        borderColor: basket.color || '#2E89C4',
-        backgroundColor: `${basket.color || '#2E89C4'}20`,
+        borderColor: '#10B981',
+        backgroundColor: '#10B98120',
         fill: true,
         tension: 0.4,
       },
@@ -201,12 +211,21 @@ const BasketDetailsPage_Enhanced: React.FC = () => {
     labels: ['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'],
     datasets: [
       {
-        label: basket.name,
+        label: 'Basket',
         data: [100, 104, 109, 115, 121, 130],
-        borderColor: basket.color || '#2E89C4',
-        backgroundColor: `${basket.color || '#2E89C4'}20`,
+        borderColor: '#10B981',
+        backgroundColor: '#10B98120',
         fill: true,
         tension: 0.4,
+      },
+      {
+        label: 'Smart SIP',
+        data: [150, 156, 163.5, 172.5, 181.5, 195],
+        borderColor: '#059669',
+        backgroundColor: '#05966920',
+        fill: true,
+        tension: 0.4,
+        borderDash: [5, 5],
       },
     ],
   };
@@ -300,17 +319,17 @@ const BasketDetailsPage_Enhanced: React.FC = () => {
         {/* Performance Chart */}
         {performanceData && performanceData.length > 0 && (
           <div className="card p-6 mb-6">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-primary" />
                 Performance Trend
               </h2>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {(['1Y', '3Y', '5Y', '10Y'] as const).map(range => (
                   <button
                     key={range}
                     onClick={() => setTimeRange(range)}
-                    className={`px-3 py-1 rounded text-sm transition-colors ${
+                    className={`px-2.5 sm:px-3 py-1 rounded text-xs sm:text-sm transition-colors ${
                       timeRange === range
                         ? 'bg-primary text-white'
                         : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -327,17 +346,30 @@ const BasketDetailsPage_Enhanced: React.FC = () => {
                 <Loader className="w-8 h-8 animate-spin text-primary" />
               </div>
             ) : (
-              <div className="h-64">
+              <div className="h-80" style={{ paddingBottom: '20px' }}>
                 <Line
                   data={lineData}
                   options={{
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                      padding: {
+                        bottom: 20
+                      }
+                    },
                     plugins: {
                       legend: { position: 'top' as const },
                       tooltip: { mode: 'index', intersect: false },
                     },
                     scales: {
+                      x: {
+                        ticks: {
+                          maxRotation: 45,
+                          minRotation: 45,
+                          autoSkip: true,
+                          maxTicksLimit: 12
+                        }
+                      },
                       y: { beginAtZero: false },
                     },
                   }}
